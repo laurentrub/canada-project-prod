@@ -66,16 +66,22 @@ function Index() {
             <p className="mt-6 max-w-lg text-lg text-muted-foreground">
               Découvrez les programmes d'immigration du Canada et obtenez une consultation personnalisée. Plus de 60 voies pour étudier, travailler et vivre au Canada.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Link
+                to="/evaluation"
+                className="order-1 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-base font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.02] sm:order-none sm:py-3 sm:text-sm"
+              >
+                Évaluer mon admissibilité <ArrowRight className="h-4 w-4" />
+              </Link>
               <Link
                 to="/consultation"
-                className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.02]"
+                className="order-2 inline-flex items-center justify-center gap-2 rounded-full border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-accent sm:order-none"
               >
-                Réserver ma consultation <ArrowRight className="h-4 w-4" />
+                Réserver ma consultation
               </Link>
               <Link
                 to="/programmes"
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-accent"
+                className="order-3 inline-flex items-center justify-center gap-2 rounded-full border border-border bg-background px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-accent sm:order-none"
               >
                 Explorer les programmes
               </Link>

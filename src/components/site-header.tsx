@@ -31,12 +31,20 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <Link
-          to="/consultation"
-          className="inline-flex h-9 items-center justify-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.02]"
-        >
-          Consultation
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/evaluation"
+            className="inline-flex h-9 items-center justify-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.02] md:hidden"
+          >
+            Évaluation gratuite
+          </Link>
+          <Link
+            to="/consultation"
+            className="hidden h-9 items-center justify-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.02] md:inline-flex"
+          >
+            Consultation
+          </Link>
+        </div>
       </div>
     </header>
   );
