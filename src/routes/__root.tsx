@@ -4,10 +4,12 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useLocation,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { ClipboardCheck } from "lucide-react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -123,15 +125,27 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const location = useLocation();
+  const hideStickyCta = location.pathname.startsWith("/evaluation");
 
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col">
         <SiteHeader />
-        <main className="flex-1">
+        <main className={`flex-1 ${hideStickyCta ? "" : "pb-20 md:pb-0"}`}>
           <Outlet />
         </main>
         <SiteFooter />
+        {!hideStickyCta && (
+          <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 p-3 shadow-[0_-6px_20px_-10px_rgba(0,0,0,0.25)] backdrop-blur md:hidden">
+            <Link
+              to="/evaluation"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-base font-semibold text-primary-foreground shadow-[var(--shadow-elegant)]"
+            >
+              <ClipboardCheck className="h-5 w-5" /> Évaluer mon admissibilité
+            </Link>
+          </div>
+        )}
       </div>
     </QueryClientProvider>
   );
