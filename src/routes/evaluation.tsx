@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { CheckCircle2, ArrowRight, ArrowLeft, ClipboardCheck } from "lucide-react";
+import { CheckCircle2, ArrowRight, ArrowLeft, ClipboardCheck, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/evaluation")({
   head: () => ({
@@ -16,46 +16,80 @@ export const Route = createFileRoute("/evaluation")({
 });
 
 type FormData = {
-  // Step 1
+  // Step 1 — Identité
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
+  emailConfirm: string;
+  birthYear: string;
+  gender: string;
+  nationality: string;
   country: string;
-  age: string;
+  city: string;
   maritalStatus: string;
+  spouseAccompanies: string;
   children: string;
-  // Step 2
+  childrenAccompany: string;
+  // Step 2 — Études
   education: string;
   fieldOfStudy: string;
+  diplomaCountry: string;
+  yearsOfStudy: string;
+  ecaDone: string;
+  // Step 3 — Langues
   frenchLevel: string;
+  frenchTest: string;
+  frenchScore: string;
   englishLevel: string;
-  // Step 3
+  englishTest: string;
+  englishScore: string;
+  // Step 4 — Expérience pro
   experienceYears: string;
   occupation: string;
+  nocCategory: string;
+  selfEmployed: string;
+  managementExperience: string;
+  // Step 5 — Liens Canada
   jobOffer: string;
-  canadaExperience: string;
+  canadaStudy: string;
+  canadaWork: string;
+  canadaVisits: string;
   familyInCanada: string;
-  // Step 4
+  familyRelation: string;
+  previousApplication: string;
+  refusalHistory: string;
+  // Step 6 — Projet
   program: string;
   province: string;
   timeline: string;
   budget: string;
+  netWorth: string;
   notes: string;
+  hearAbout: string;
+  consent: boolean;
 };
 
 const initialData: FormData = {
-  firstName: "", lastName: "", email: "", phone: "", country: "", age: "", maritalStatus: "", children: "",
-  education: "", fieldOfStudy: "", frenchLevel: "", englishLevel: "",
-  experienceYears: "", occupation: "", jobOffer: "", canadaExperience: "", familyInCanada: "",
-  program: "", province: "", timeline: "", budget: "", notes: "",
+  firstName: "", lastName: "", email: "", emailConfirm: "",
+  birthYear: "", gender: "", nationality: "", country: "", city: "",
+  maritalStatus: "", spouseAccompanies: "", children: "", childrenAccompany: "",
+  education: "", fieldOfStudy: "", diplomaCountry: "", yearsOfStudy: "", ecaDone: "",
+  frenchLevel: "", frenchTest: "", frenchScore: "",
+  englishLevel: "", englishTest: "", englishScore: "",
+  experienceYears: "", occupation: "", nocCategory: "", selfEmployed: "", managementExperience: "",
+  jobOffer: "", canadaStudy: "", canadaWork: "", canadaVisits: "",
+  familyInCanada: "", familyRelation: "", previousApplication: "", refusalHistory: "",
+  program: "", province: "", timeline: "", budget: "", netWorth: "",
+  notes: "", hearAbout: "", consent: false,
 };
 
 const steps = [
-  { title: "Profil personnel", desc: "Informations de base" },
-  { title: "Études & langues", desc: "Diplômes et compétences linguistiques" },
-  { title: "Expérience professionnelle", desc: "Parcours et liens avec le Canada" },
-  { title: "Votre projet", desc: "Programme visé et calendrier" },
+  { title: "Identité & famille", desc: "Vos informations personnelles et votre situation familiale" },
+  { title: "Études", desc: "Diplômes, domaine d'études et évaluation des diplômes" },
+  { title: "Langues officielles", desc: "Vos niveaux de français et d'anglais" },
+  { title: "Expérience professionnelle", desc: "Parcours professionnel et compétences" },
+  { title: "Liens avec le Canada", desc: "Offre d'emploi, séjours, famille et historique" },
+  { title: "Votre projet", desc: "Programme visé, budget et calendrier" },
 ];
 
 function Evaluation() {
@@ -65,13 +99,21 @@ function Evaluation() {
 
   const progress = useMemo(() => ((step + 1) / steps.length) * 100, [step]);
   const update = (k: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
-    setData((d) => ({ ...d, [k]: e.target.value }));
+    setData((d) => ({ ...d, [k]: e.target.value } as FormData));
 
   const next = () => setStep((s) => Math.min(s + 1, steps.length - 1));
   const prev = () => setStep((s) => Math.max(s - 1, 0));
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (data.email !== data.emailConfirm) {
+      alert("Les deux adresses email ne correspondent pas.");
+      return;
+    }
+    if (!data.consent) {
+      alert("Veuillez accepter le traitement de vos informations.");
+      return;
+    }
     setSubmitted(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -98,7 +140,10 @@ function Evaluation() {
             </span>
             <h2 className="mt-4 font-display text-3xl font-bold">Merci, {data.firstName || "à bientôt"} !</h2>
             <p className="mt-3 text-muted-foreground">
-              Votre dossier d'évaluation a été reçu. Un conseiller vous contactera à <span className="font-semibold text-foreground">{data.email}</span> sous 24 à 48 heures avec une analyse personnalisée.
+              Votre dossier d'évaluation a bien été enregistré. Un conseiller vous répondra exclusivement par email à <span className="font-semibold text-foreground">{data.email}</span> sous 24 à 72 heures avec une analyse personnalisée de votre admissibilité aux programmes canadiens.
+            </p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Pensez à vérifier votre dossier de courriers indésirables.
             </p>
           </div>
         ) : (
@@ -119,44 +164,88 @@ function Evaluation() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field label="Prénom" value={data.firstName} onChange={update("firstName")} required />
                   <Field label="Nom" value={data.lastName} onChange={update("lastName")} required />
-                  <Field label="Email" type="email" value={data.email} onChange={update("email")} required />
-                  <Field label="Téléphone" type="tel" value={data.phone} onChange={update("phone")} />
-                  <Field label="Pays de résidence" value={data.country} onChange={update("country")} required />
-                  <Select label="Âge" value={data.age} onChange={update("age")} options={["Moins de 18", "18-29", "30-39", "40-49", "50 et +"]} required />
-                  <Select label="État civil" value={data.maritalStatus} onChange={update("maritalStatus")} options={["Célibataire", "En couple", "Marié(e)", "Divorcé(e)", "Veuf/Veuve"]} required />
-                  <Select label="Enfants à charge" value={data.children} onChange={update("children")} options={["Aucun", "1", "2", "3 ou +"]} />
+                  <Field label="Email" type="email" value={data.email} onChange={update("email")} required placeholder="vous@exemple.com" />
+                  <Field label="Confirmez votre email" type="email" value={data.emailConfirm} onChange={update("emailConfirm")} required placeholder="vous@exemple.com" />
+                  <Field label="Année de naissance" type="number" value={data.birthYear} onChange={update("birthYear")} required placeholder="1990" />
+                  <Select label="Genre" value={data.gender} onChange={update("gender")} options={["Femme", "Homme", "Autre", "Préfère ne pas répondre"]} />
+                  <Field label="Nationalité" value={data.nationality} onChange={update("nationality")} required placeholder="Ex. Française, Marocaine..." />
+                  <Field label="Pays de résidence actuel" value={data.country} onChange={update("country")} required />
+                  <Field label="Ville de résidence" value={data.city} onChange={update("city")} />
+                  <Select label="État civil" value={data.maritalStatus} onChange={update("maritalStatus")} options={["Célibataire", "En couple / conjoint de fait", "Marié(e)", "Divorcé(e) / séparé(e)", "Veuf / Veuve"]} required />
+                  <Select label="Conjoint vous accompagne ?" value={data.spouseAccompanies} onChange={update("spouseAccompanies")} options={["Sans objet", "Oui", "Non", "À déterminer"]} />
+                  <Select label="Nombre d'enfants à charge" value={data.children} onChange={update("children")} options={["Aucun", "1", "2", "3", "4 ou +"]} />
+                  <Select label="Enfants vous accompagnent ?" value={data.childrenAccompany} onChange={update("childrenAccompany")} options={["Sans objet", "Tous", "Une partie", "Aucun"]} />
                 </div>
               )}
 
               {step === 1 && (
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <Select label="Niveau d'études le plus élevé" value={data.education} onChange={update("education")} options={["Secondaire", "Diplôme professionnel", "Bac / Licence", "Master", "Doctorat"]} required />
-                  <Field label="Domaine d'études" value={data.fieldOfStudy} onChange={update("fieldOfStudy")} placeholder="Ex. Informatique, Santé..." />
-                  <Select label="Niveau de français" value={data.frenchLevel} onChange={update("frenchLevel")} options={["Aucun", "Débutant (A1-A2)", "Intermédiaire (B1-B2)", "Avancé (C1-C2)", "Langue maternelle"]} required />
-                  <Select label="Niveau d'anglais" value={data.englishLevel} onChange={update("englishLevel")} options={["Aucun", "Débutant (A1-A2)", "Intermédiaire (B1-B2)", "Avancé (C1-C2)", "Langue maternelle"]} required />
+                  <Select label="Niveau d'études le plus élevé" value={data.education} onChange={update("education")} options={["Aucun diplôme", "Secondaire (lycée)", "Diplôme professionnel / DEP", "Diplôme post-secondaire (1-2 ans)", "Bac / Licence (3-4 ans)", "Maîtrise / Master", "Doctorat / PhD"]} required />
+                  <Field label="Domaine d'études" value={data.fieldOfStudy} onChange={update("fieldOfStudy")} placeholder="Ex. Informatique, Santé, Génie..." required />
+                  <Field label="Pays d'obtention du diplôme" value={data.diplomaCountry} onChange={update("diplomaCountry")} required />
+                  <Select label="Durée totale des études supérieures" value={data.yearsOfStudy} onChange={update("yearsOfStudy")} options={["Moins de 1 an", "1 an", "2 ans", "3 ans", "4 ans", "5 ans ou +"]} />
+                  <Select label="Évaluation des diplômes (EDE/ECA) déjà effectuée ?" value={data.ecaDone} onChange={update("ecaDone")} options={["Non", "En cours", "Oui — WES", "Oui — ICAS", "Oui — IQAS", "Oui — autre organisme"]} required />
                 </div>
               )}
 
               {step === 2 && (
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <Select label="Années d'expérience professionnelle" value={data.experienceYears} onChange={update("experienceYears")} options={["Moins de 1 an", "1-3 ans", "4-6 ans", "7-10 ans", "Plus de 10 ans"]} required />
-                  <Field label="Profession actuelle" value={data.occupation} onChange={update("occupation")} />
-                  <Select label="Offre d'emploi au Canada ?" value={data.jobOffer} onChange={update("jobOffer")} options={["Non", "En cours de négociation", "Oui, validée"]} />
-                  <Select label="Expérience de travail/études au Canada ?" value={data.canadaExperience} onChange={update("canadaExperience")} options={["Aucune", "Moins de 1 an", "1-2 ans", "Plus de 2 ans"]} />
-                  <Select label="Famille proche au Canada ?" value={data.familyInCanada} onChange={update("familyInCanada")} options={["Non", "Oui — citoyen(ne) ou résident(e) permanent(e)", "Oui — temporaire"]} />
+                  <Select label="Niveau de français" value={data.frenchLevel} onChange={update("frenchLevel")} options={["Aucun", "Débutant (A1-A2)", "Intermédiaire (B1-B2)", "Avancé (C1-C2)", "Langue maternelle"]} required />
+                  <Select label="Test de français passé" value={data.frenchTest} onChange={update("frenchTest")} options={["Aucun", "TEF Canada", "TCF Canada", "DELF / DALF", "Prévu prochainement"]} />
+                  <Field label="Score ou date prévue (français)" value={data.frenchScore} onChange={update("frenchScore")} placeholder="Ex. NCLC 7 ou prévu en 2026" />
+                  <Select label="Niveau d'anglais" value={data.englishLevel} onChange={update("englishLevel")} options={["Aucun", "Débutant (A1-A2)", "Intermédiaire (B1-B2)", "Avancé (C1-C2)", "Langue maternelle"]} required />
+                  <Select label="Test d'anglais passé" value={data.englishTest} onChange={update("englishTest")} options={["Aucun", "IELTS General", "CELPIP General", "PTE Core", "Prévu prochainement"]} />
+                  <Field label="Score ou date prévue (anglais)" value={data.englishScore} onChange={update("englishScore")} placeholder="Ex. CLB 9 ou IELTS 7.5" />
                 </div>
               )}
 
               {step === 3 && (
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <Select label="Programme visé" value={data.program} onChange={update("program")} options={["Je ne sais pas encore", "Express Entry", "PNP", "Québec (PRTQ / PEQ)", "Permis d'études", "Permis de travail", "Parrainage familial"]} required />
-                  <Select label="Province souhaitée" value={data.province} onChange={update("province")} options={["Indifférent", "Québec", "Ontario", "Colombie-Britannique", "Alberta", "Manitoba", "Saskatchewan", "Nouvelle-Écosse", "Nouveau-Brunswick", "Autre"]} />
-                  <Select label="Délai souhaité" value={data.timeline} onChange={update("timeline")} options={["Moins de 6 mois", "6-12 mois", "1-2 ans", "Plus de 2 ans"]} required />
-                  <Select label="Budget approximatif pour le projet" value={data.budget} onChange={update("budget")} options={["Moins de 5 000 $", "5 000-15 000 $", "15 000-30 000 $", "Plus de 30 000 $"]} />
+                  <Select label="Années d'expérience professionnelle qualifiée" value={data.experienceYears} onChange={update("experienceYears")} options={["Aucune", "Moins de 1 an", "1-3 ans", "4-6 ans", "7-10 ans", "Plus de 10 ans"]} required />
+                  <Field label="Profession / poste actuel" value={data.occupation} onChange={update("occupation")} required placeholder="Ex. Développeur web, Infirmier..." />
+                  <Select label="Catégorie CNP estimée" value={data.nocCategory} onChange={update("nocCategory")} options={["Je ne sais pas", "TEER 0 — gestion", "TEER 1 — professionnel", "TEER 2 — technique / supervision", "TEER 3 — métiers spécialisés", "TEER 4 — intermédiaire", "TEER 5 — élémentaire"]} />
+                  <Select label="Expérience en gestion / encadrement" value={data.managementExperience} onChange={update("managementExperience")} options={["Aucune", "Moins de 2 ans", "2-5 ans", "Plus de 5 ans"]} />
+                  <Select label="Êtes-vous travailleur autonome / entrepreneur ?" value={data.selfEmployed} onChange={update("selfEmployed")} options={["Non", "Oui, à temps partiel", "Oui, à temps plein", "Propriétaire d'entreprise"]} />
+                </div>
+              )}
+
+              {step === 4 && (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Select label="Avez-vous une offre d'emploi au Canada ?" value={data.jobOffer} onChange={update("jobOffer")} options={["Non", "En discussion", "Oui, sans EIMT", "Oui, avec EIMT validée"]} required />
+                  <Select label="Avez-vous étudié au Canada ?" value={data.canadaStudy} onChange={update("canadaStudy")} options={["Non", "Moins de 1 an", "1-2 ans", "Plus de 2 ans"]} />
+                  <Select label="Avez-vous travaillé au Canada ?" value={data.canadaWork} onChange={update("canadaWork")} options={["Non", "Moins de 1 an", "1-2 ans", "Plus de 2 ans"]} />
+                  <Select label="Séjours touristiques au Canada" value={data.canadaVisits} onChange={update("canadaVisits")} options={["Jamais", "1 séjour", "2-3 séjours", "Plus de 3 séjours"]} />
+                  <Select label="Famille proche au Canada" value={data.familyInCanada} onChange={update("familyInCanada")} options={["Non", "Oui — citoyen(ne) / résident(e) permanent(e)", "Oui — résident(e) temporaire"]} required />
+                  <Field label="Lien de parenté (si applicable)" value={data.familyRelation} onChange={update("familyRelation")} placeholder="Ex. frère, tante, conjoint..." />
+                  <Select label="Avez-vous déjà déposé une demande d'immigration canadienne ?" value={data.previousApplication} onChange={update("previousApplication")} options={["Non", "Oui — en cours", "Oui — acceptée", "Oui — abandonnée"]} required />
+                  <Select label="Avez-vous déjà eu un refus de visa (tout pays) ?" value={data.refusalHistory} onChange={update("refusalHistory")} options={["Non", "Oui — Canada", "Oui — autre pays", "Oui — plusieurs pays"]} required />
+                </div>
+              )}
+
+              {step === 5 && (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Select label="Programme d'immigration visé" value={data.program} onChange={update("program")} options={["Je ne sais pas encore", "Entrée Express — FSW", "Entrée Express — CEC", "Entrée Express — métiers spécialisés", "Programmes provinciaux (PCP / PNP)", "Québec — PRTQ", "Québec — PEQ", "Permis d'études", "Permis de travail (PTET / MIT)", "Parrainage familial", "Immigration des gens d'affaires / investisseurs", "Programme Atlantique / rural / nordique"]} required />
+                  <Select label="Province souhaitée" value={data.province} onChange={update("province")} options={["Indifférent", "Québec", "Ontario", "Colombie-Britannique", "Alberta", "Manitoba", "Saskatchewan", "Nouvelle-Écosse", "Nouveau-Brunswick", "Île-du-Prince-Édouard", "Terre-Neuve-et-Labrador", "Yukon / TNO / Nunavut"]} required />
+                  <Select label="Délai souhaité pour l'arrivée" value={data.timeline} onChange={update("timeline")} options={["Moins de 6 mois", "6-12 mois", "1-2 ans", "Plus de 2 ans", "Pas encore décidé"]} required />
+                  <Select label="Budget pour les démarches" value={data.budget} onChange={update("budget")} options={["Moins de 5 000 $ CAD", "5 000-15 000 $ CAD", "15 000-30 000 $ CAD", "Plus de 30 000 $ CAD"]} required />
+                  <Select label="Fonds disponibles pour l'installation" value={data.netWorth} onChange={update("netWorth")} options={["Moins de 10 000 $ CAD", "10 000-25 000 $ CAD", "25 000-50 000 $ CAD", "50 000-100 000 $ CAD", "Plus de 100 000 $ CAD"]} required />
+                  <Select label="Comment avez-vous connu Maple Path ?" value={data.hearAbout} onChange={update("hearAbout")} options={["Recherche Google", "Réseaux sociaux", "Recommandation", "Article / blog", "Autre"]} />
                   <div className="sm:col-span-2">
                     <label className="text-sm font-medium">Notes complémentaires</label>
-                    <textarea rows={4} value={data.notes} onChange={update("notes")} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" placeholder="Précisez votre situation ou vos questions..." />
+                    <textarea rows={4} value={data.notes} onChange={update("notes")} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" placeholder="Précisez votre situation, vos motivations ou vos questions..." />
                   </div>
+                  <label className="sm:col-span-2 flex items-start gap-3 rounded-lg border border-border bg-secondary/40 p-4 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={data.consent}
+                      onChange={(e) => setData((d) => ({ ...d, consent: e.target.checked }))}
+                      className="mt-1 h-4 w-4 accent-[hsl(var(--primary))]"
+                      required
+                    />
+                    <span className="text-muted-foreground">
+                      J'accepte que Maple Path utilise les informations ci-dessus pour évaluer mon admissibilité et me répondre par email. Aucune donnée n'est partagée avec des tiers.
+                    </span>
+                  </label>
                 </div>
               )}
 
@@ -188,8 +277,8 @@ function Evaluation() {
               </div>
             </form>
 
-            <p className="mt-4 text-center text-xs text-muted-foreground">
-              Vos informations sont confidentielles et ne servent qu'à préparer votre évaluation.
+            <p className="mt-4 flex items-center justify-center gap-2 text-center text-xs text-muted-foreground">
+              <ShieldCheck className="h-3.5 w-3.5" /> Données confidentielles. Réponse uniquement par email — service dédié aux candidats résidant hors du Canada.
             </p>
           </>
         )}

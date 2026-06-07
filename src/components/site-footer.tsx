@@ -21,9 +21,9 @@ export function SiteFooter() {
         <div className="text-sm">
           <p className="font-semibold">Contact</p>
           <ul className="mt-3 space-y-2 text-muted-foreground">
-            <li>Montréal, QC, Canada</li>
             <li>contact@maplepath.ca</li>
-            <li>+1 (514) 555-0182</li>
+            <li>Service 100 % en ligne</li>
+            <li>Réponse sous 24-72 h</li>
           </ul>
         </div>
       </div>
