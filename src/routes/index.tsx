@@ -68,7 +68,7 @@ function Index() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                to="/contact"
+                to="/consultation"
                 className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.02]"
               >
                 Réserver ma consultation <ArrowRight className="h-4 w-4" />
@@ -158,7 +158,7 @@ function Index() {
             Réservez une consultation gratuite de 30 minutes avec l'un de nos conseillers réglementés.
           </p>
           <Link
-            to="/contact"
+            to="/evaluation"
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-background px-6 py-3 text-sm font-semibold text-primary transition-transform hover:scale-[1.02]"
           >
             Commencer maintenant <ArrowRight className="h-4 w-4" />

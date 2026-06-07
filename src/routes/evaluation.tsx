@@ -231,10 +231,10 @@ function Evaluation() {
                   <Select label="Fonds disponibles pour l'installation" value={data.netWorth} onChange={update("netWorth")} options={["Moins de 10 000 $ CAD", "10 000-25 000 $ CAD", "25 000-50 000 $ CAD", "50 000-100 000 $ CAD", "Plus de 100 000 $ CAD"]} required />
                   <Select label="Comment avez-vous connu Maple Path ?" value={data.hearAbout} onChange={update("hearAbout")} options={["Recherche Google", "Réseaux sociaux", "Recommandation", "Article / blog", "Autre"]} />
                   <div className="sm:col-span-2">
-                    <label className="text-sm font-medium">Notes complémentaires</label>
-                    <textarea rows={4} value={data.notes} onChange={update("notes")} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" placeholder="Précisez votre situation, vos motivations ou vos questions..." />
+                    <label className="text-base font-medium">Notes complémentaires</label>
+                    <textarea rows={4} value={data.notes} onChange={update("notes")} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-base" placeholder="Précisez votre situation, vos motivations ou vos questions..." />
                   </div>
-                  <label className="sm:col-span-2 flex items-start gap-3 rounded-lg border border-border bg-secondary/40 p-4 text-sm">
+                  <label className="sm:col-span-2 flex items-start gap-3 rounded-lg border border-border bg-secondary/40 p-4 text-base">
                     <input
                       type="checkbox"
                       checked={data.consent}
@@ -297,14 +297,14 @@ function Field({ label, value, onChange, type = "text", required, placeholder }:
 }) {
   return (
     <div>
-      <label className="text-sm font-medium">{label}{required && <span className="text-primary"> *</span>}</label>
+      <label className="text-base font-medium">{label}{required && <span className="text-primary"> *</span>}</label>
       <input
         type={type}
         value={value}
         onChange={onChange}
         required={required}
         placeholder={placeholder}
-        className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
       />
     </div>
   );
@@ -319,12 +319,12 @@ function Select({ label, value, onChange, options, required }: {
 }) {
   return (
     <div>
-      <label className="text-sm font-medium">{label}{required && <span className="text-primary"> *</span>}</label>
+      <label className="text-base font-medium">{label}{required && <span className="text-primary"> *</span>}</label>
       <select
         value={value}
         onChange={onChange}
         required={required}
-        className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
       >
         <option value="">Sélectionner...</option>
         {options.map((o) => <option key={o} value={o}>{o}</option>)}
