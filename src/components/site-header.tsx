@@ -6,7 +6,6 @@ const nav = [
   { to: "/programmes", label: "Programmes" },
   { to: "/evaluation", label: "Évaluation" },
   { to: "/a-propos", label: "À propos" },
-  { to: "/contact", label: "Contact" },
 ] as const;
 
 export function SiteHeader() {
@@ -33,7 +32,7 @@ export function SiteHeader() {
           ))}
         </nav>
         <Link
-          to="/contact"
+          to="/consultation"
           className="inline-flex h-9 items-center justify-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.02]"
         >
           Consultation
