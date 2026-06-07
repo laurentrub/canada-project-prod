@@ -161,7 +161,7 @@ function Evaluation() {
 
             <form onSubmit={submit} className="space-y-6 rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-card)] sm:p-8">
               {step === 0 && (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-5 sm:grid-cols-2">
                   <Field label="Prénom" value={data.firstName} onChange={update("firstName")} required />
                   <Field label="Nom" value={data.lastName} onChange={update("lastName")} required />
                   <Field label="Email" type="email" value={data.email} onChange={update("email")} required placeholder="vous@exemple.com" />
@@ -297,14 +297,14 @@ function Field({ label, value, onChange, type = "text", required, placeholder }:
 }) {
   return (
     <div>
-      <label className="text-base font-medium">{label}{required && <span className="text-primary"> *</span>}</label>
+      <label className="text-sm font-medium sm:text-base">{label}{required && <span className="text-primary"> *</span>}</label>
       <input
         type={type}
         value={value}
         onChange={onChange}
         required={required}
         placeholder={placeholder}
-        className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        className="mt-1.5 w-full rounded-lg border border-input bg-background px-3.5 py-3 text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
       />
     </div>
   );
@@ -319,12 +319,12 @@ function Select({ label, value, onChange, options, required }: {
 }) {
   return (
     <div>
-      <label className="text-base font-medium">{label}{required && <span className="text-primary"> *</span>}</label>
+      <label className="text-sm font-medium sm:text-base">{label}{required && <span className="text-primary"> *</span>}</label>
       <select
         value={value}
         onChange={onChange}
         required={required}
-        className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        className="mt-1.5 w-full rounded-lg border border-input bg-background px-3.5 py-3 text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
       >
         <option value="">Sélectionner...</option>
         {options.map((o) => <option key={o} value={o}>{o}</option>)}
