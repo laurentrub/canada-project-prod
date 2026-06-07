@@ -121,18 +121,18 @@ function Evaluation() {
   return (
     <div>
       <section className="border-b border-border bg-secondary/40">
-        <div className="mx-auto max-w-4xl px-6 py-16">
-          <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-primary">
+        <div className="mx-auto max-w-4xl px-5 py-12 sm:px-6 sm:py-16">
+          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary sm:text-sm">
             <ClipboardCheck className="h-4 w-4" /> Évaluation gratuite
           </p>
-          <h1 className="mt-2 font-display text-4xl font-bold sm:text-5xl">Évaluez votre admissibilité en 5 minutes.</h1>
-          <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
+          <h1 className="mt-3 font-display text-3xl font-bold leading-tight sm:text-5xl">Évaluez votre admissibilité en 5 minutes.</h1>
+          <p className="mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">
             Répondez à quelques questions pour que nos conseillers identifient les programmes d'immigration canadiens les mieux adaptés à votre profil.
           </p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-3xl px-6 py-16">
+      <section className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16">
         {submitted ? (
           <div className="rounded-2xl border border-border bg-card p-10 text-center shadow-[var(--shadow-card)]">
             <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-primary/10 text-primary">
@@ -148,20 +148,20 @@ function Evaluation() {
           </div>
         ) : (
           <>
-            <div className="mb-8">
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-semibold">Étape {step + 1} / {steps.length} — {steps[step].title}</span>
-                <span className="text-muted-foreground">{Math.round(progress)}%</span>
+            <div className="mb-6 sm:mb-8">
+              <div className="flex items-center justify-between gap-3 text-sm">
+                <span className="font-semibold leading-snug">Étape {step + 1} / {steps.length} — {steps[step].title}</span>
+                <span className="shrink-0 text-muted-foreground">{Math.round(progress)}%</span>
               </div>
               <div className="mt-2 h-2 overflow-hidden rounded-full bg-secondary">
                 <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
               </div>
-              <p className="mt-2 text-sm text-muted-foreground">{steps[step].desc}</p>
+              <p className="mt-2 text-sm text-muted-foreground sm:text-base">{steps[step].desc}</p>
             </div>
 
-            <form onSubmit={submit} className="space-y-5 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)] sm:p-8">
+            <form onSubmit={submit} className="space-y-6 rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-card)] sm:p-8">
               {step === 0 && (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-5 sm:grid-cols-2">
                   <Field label="Prénom" value={data.firstName} onChange={update("firstName")} required />
                   <Field label="Nom" value={data.lastName} onChange={update("lastName")} required />
                   <Field label="Email" type="email" value={data.email} onChange={update("email")} required placeholder="vous@exemple.com" />
@@ -179,7 +179,7 @@ function Evaluation() {
               )}
 
               {step === 1 && (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-5 sm:grid-cols-2">
                   <Select label="Niveau d'études le plus élevé" value={data.education} onChange={update("education")} options={["Aucun diplôme", "Secondaire (lycée)", "Diplôme professionnel / DEP", "Diplôme post-secondaire (1-2 ans)", "Bac / Licence (3-4 ans)", "Maîtrise / Master", "Doctorat / PhD"]} required />
                   <Field label="Domaine d'études" value={data.fieldOfStudy} onChange={update("fieldOfStudy")} placeholder="Ex. Informatique, Santé, Génie..." required />
                   <Field label="Pays d'obtention du diplôme" value={data.diplomaCountry} onChange={update("diplomaCountry")} required />
@@ -189,7 +189,7 @@ function Evaluation() {
               )}
 
               {step === 2 && (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-5 sm:grid-cols-2">
                   <Select label="Niveau de français" value={data.frenchLevel} onChange={update("frenchLevel")} options={["Aucun", "Débutant (A1-A2)", "Intermédiaire (B1-B2)", "Avancé (C1-C2)", "Langue maternelle"]} required />
                   <Select label="Test de français passé" value={data.frenchTest} onChange={update("frenchTest")} options={["Aucun", "TEF Canada", "TCF Canada", "DELF / DALF", "Prévu prochainement"]} />
                   <Field label="Score ou date prévue (français)" value={data.frenchScore} onChange={update("frenchScore")} placeholder="Ex. NCLC 7 ou prévu en 2026" />
@@ -200,7 +200,7 @@ function Evaluation() {
               )}
 
               {step === 3 && (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-5 sm:grid-cols-2">
                   <Select label="Années d'expérience professionnelle qualifiée" value={data.experienceYears} onChange={update("experienceYears")} options={["Aucune", "Moins de 1 an", "1-3 ans", "4-6 ans", "7-10 ans", "Plus de 10 ans"]} required />
                   <Field label="Profession / poste actuel" value={data.occupation} onChange={update("occupation")} required placeholder="Ex. Développeur web, Infirmier..." />
                   <Select label="Catégorie CNP estimée" value={data.nocCategory} onChange={update("nocCategory")} options={["Je ne sais pas", "TEER 0 — gestion", "TEER 1 — professionnel", "TEER 2 — technique / supervision", "TEER 3 — métiers spécialisés", "TEER 4 — intermédiaire", "TEER 5 — élémentaire"]} />
@@ -210,7 +210,7 @@ function Evaluation() {
               )}
 
               {step === 4 && (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-5 sm:grid-cols-2">
                   <Select label="Avez-vous une offre d'emploi au Canada ?" value={data.jobOffer} onChange={update("jobOffer")} options={["Non", "En discussion", "Oui, sans EIMT", "Oui, avec EIMT validée"]} required />
                   <Select label="Avez-vous étudié au Canada ?" value={data.canadaStudy} onChange={update("canadaStudy")} options={["Non", "Moins de 1 an", "1-2 ans", "Plus de 2 ans"]} />
                   <Select label="Avez-vous travaillé au Canada ?" value={data.canadaWork} onChange={update("canadaWork")} options={["Non", "Moins de 1 an", "1-2 ans", "Plus de 2 ans"]} />
@@ -223,7 +223,7 @@ function Evaluation() {
               )}
 
               {step === 5 && (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-5 sm:grid-cols-2">
                   <Select label="Programme d'immigration visé" value={data.program} onChange={update("program")} options={["Je ne sais pas encore", "Entrée Express — FSW", "Entrée Express — CEC", "Entrée Express — métiers spécialisés", "Programmes provinciaux (PCP / PNP)", "Québec — PRTQ", "Québec — PEQ", "Permis d'études", "Permis de travail (PTET / MIT)", "Parrainage familial", "Immigration des gens d'affaires / investisseurs", "Programme Atlantique / rural / nordique"]} required />
                   <Select label="Province souhaitée" value={data.province} onChange={update("province")} options={["Indifférent", "Québec", "Ontario", "Colombie-Britannique", "Alberta", "Manitoba", "Saskatchewan", "Nouvelle-Écosse", "Nouveau-Brunswick", "Île-du-Prince-Édouard", "Terre-Neuve-et-Labrador", "Yukon / TNO / Nunavut"]} required />
                   <Select label="Délai souhaité pour l'arrivée" value={data.timeline} onChange={update("timeline")} options={["Moins de 6 mois", "6-12 mois", "1-2 ans", "Plus de 2 ans", "Pas encore décidé"]} required />
@@ -297,14 +297,14 @@ function Field({ label, value, onChange, type = "text", required, placeholder }:
 }) {
   return (
     <div>
-      <label className="text-base font-medium">{label}{required && <span className="text-primary"> *</span>}</label>
+      <label className="text-sm font-medium sm:text-base">{label}{required && <span className="text-primary"> *</span>}</label>
       <input
         type={type}
         value={value}
         onChange={onChange}
         required={required}
         placeholder={placeholder}
-        className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        className="mt-1.5 w-full rounded-lg border border-input bg-background px-3.5 py-3 text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
       />
     </div>
   );
@@ -319,12 +319,12 @@ function Select({ label, value, onChange, options, required }: {
 }) {
   return (
     <div>
-      <label className="text-base font-medium">{label}{required && <span className="text-primary"> *</span>}</label>
+      <label className="text-sm font-medium sm:text-base">{label}{required && <span className="text-primary"> *</span>}</label>
       <select
         value={value}
         onChange={onChange}
         required={required}
-        className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        className="mt-1.5 w-full rounded-lg border border-input bg-background px-3.5 py-3 text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
       >
         <option value="">Sélectionner...</option>
         {options.map((o) => <option key={o} value={o}>{o}</option>)}
