@@ -179,7 +179,7 @@ function Evaluation() {
               )}
 
               {step === 1 && (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-5 sm:grid-cols-2">
                   <Select label="Niveau d'études le plus élevé" value={data.education} onChange={update("education")} options={["Aucun diplôme", "Secondaire (lycée)", "Diplôme professionnel / DEP", "Diplôme post-secondaire (1-2 ans)", "Bac / Licence (3-4 ans)", "Maîtrise / Master", "Doctorat / PhD"]} required />
                   <Field label="Domaine d'études" value={data.fieldOfStudy} onChange={update("fieldOfStudy")} placeholder="Ex. Informatique, Santé, Génie..." required />
                   <Field label="Pays d'obtention du diplôme" value={data.diplomaCountry} onChange={update("diplomaCountry")} required />
@@ -189,7 +189,7 @@ function Evaluation() {
               )}
 
               {step === 2 && (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-5 sm:grid-cols-2">
                   <Select label="Niveau de français" value={data.frenchLevel} onChange={update("frenchLevel")} options={["Aucun", "Débutant (A1-A2)", "Intermédiaire (B1-B2)", "Avancé (C1-C2)", "Langue maternelle"]} required />
                   <Select label="Test de français passé" value={data.frenchTest} onChange={update("frenchTest")} options={["Aucun", "TEF Canada", "TCF Canada", "DELF / DALF", "Prévu prochainement"]} />
                   <Field label="Score ou date prévue (français)" value={data.frenchScore} onChange={update("frenchScore")} placeholder="Ex. NCLC 7 ou prévu en 2026" />
@@ -200,7 +200,7 @@ function Evaluation() {
               )}
 
               {step === 3 && (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-5 sm:grid-cols-2">
                   <Select label="Années d'expérience professionnelle qualifiée" value={data.experienceYears} onChange={update("experienceYears")} options={["Aucune", "Moins de 1 an", "1-3 ans", "4-6 ans", "7-10 ans", "Plus de 10 ans"]} required />
                   <Field label="Profession / poste actuel" value={data.occupation} onChange={update("occupation")} required placeholder="Ex. Développeur web, Infirmier..." />
                   <Select label="Catégorie CNP estimée" value={data.nocCategory} onChange={update("nocCategory")} options={["Je ne sais pas", "TEER 0 — gestion", "TEER 1 — professionnel", "TEER 2 — technique / supervision", "TEER 3 — métiers spécialisés", "TEER 4 — intermédiaire", "TEER 5 — élémentaire"]} />
@@ -210,7 +210,7 @@ function Evaluation() {
               )}
 
               {step === 4 && (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-5 sm:grid-cols-2">
                   <Select label="Avez-vous une offre d'emploi au Canada ?" value={data.jobOffer} onChange={update("jobOffer")} options={["Non", "En discussion", "Oui, sans EIMT", "Oui, avec EIMT validée"]} required />
                   <Select label="Avez-vous étudié au Canada ?" value={data.canadaStudy} onChange={update("canadaStudy")} options={["Non", "Moins de 1 an", "1-2 ans", "Plus de 2 ans"]} />
                   <Select label="Avez-vous travaillé au Canada ?" value={data.canadaWork} onChange={update("canadaWork")} options={["Non", "Moins de 1 an", "1-2 ans", "Plus de 2 ans"]} />
@@ -223,7 +223,7 @@ function Evaluation() {
               )}
 
               {step === 5 && (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-5 sm:grid-cols-2">
                   <Select label="Programme d'immigration visé" value={data.program} onChange={update("program")} options={["Je ne sais pas encore", "Entrée Express — FSW", "Entrée Express — CEC", "Entrée Express — métiers spécialisés", "Programmes provinciaux (PCP / PNP)", "Québec — PRTQ", "Québec — PEQ", "Permis d'études", "Permis de travail (PTET / MIT)", "Parrainage familial", "Immigration des gens d'affaires / investisseurs", "Programme Atlantique / rural / nordique"]} required />
                   <Select label="Province souhaitée" value={data.province} onChange={update("province")} options={["Indifférent", "Québec", "Ontario", "Colombie-Britannique", "Alberta", "Manitoba", "Saskatchewan", "Nouvelle-Écosse", "Nouveau-Brunswick", "Île-du-Prince-Édouard", "Terre-Neuve-et-Labrador", "Yukon / TNO / Nunavut"]} required />
                   <Select label="Délai souhaité pour l'arrivée" value={data.timeline} onChange={update("timeline")} options={["Moins de 6 mois", "6-12 mois", "1-2 ans", "Plus de 2 ans", "Pas encore décidé"]} required />
