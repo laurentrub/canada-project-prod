@@ -121,18 +121,18 @@ function Evaluation() {
   return (
     <div>
       <section className="border-b border-border bg-secondary/40">
-        <div className="mx-auto max-w-4xl px-6 py-16">
-          <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-primary">
+        <div className="mx-auto max-w-4xl px-5 py-12 sm:px-6 sm:py-16">
+          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary sm:text-sm">
             <ClipboardCheck className="h-4 w-4" /> Évaluation gratuite
           </p>
-          <h1 className="mt-2 font-display text-4xl font-bold sm:text-5xl">Évaluez votre admissibilité en 5 minutes.</h1>
-          <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
+          <h1 className="mt-3 font-display text-3xl font-bold leading-tight sm:text-5xl">Évaluez votre admissibilité en 5 minutes.</h1>
+          <p className="mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">
             Répondez à quelques questions pour que nos conseillers identifient les programmes d'immigration canadiens les mieux adaptés à votre profil.
           </p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-3xl px-6 py-16">
+      <section className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16">
         {submitted ? (
           <div className="rounded-2xl border border-border bg-card p-10 text-center shadow-[var(--shadow-card)]">
             <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-primary/10 text-primary">
@@ -148,18 +148,18 @@ function Evaluation() {
           </div>
         ) : (
           <>
-            <div className="mb-8">
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-semibold">Étape {step + 1} / {steps.length} — {steps[step].title}</span>
-                <span className="text-muted-foreground">{Math.round(progress)}%</span>
+            <div className="mb-6 sm:mb-8">
+              <div className="flex items-center justify-between gap-3 text-sm">
+                <span className="font-semibold leading-snug">Étape {step + 1} / {steps.length} — {steps[step].title}</span>
+                <span className="shrink-0 text-muted-foreground">{Math.round(progress)}%</span>
               </div>
               <div className="mt-2 h-2 overflow-hidden rounded-full bg-secondary">
                 <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
               </div>
-              <p className="mt-2 text-sm text-muted-foreground">{steps[step].desc}</p>
+              <p className="mt-2 text-sm text-muted-foreground sm:text-base">{steps[step].desc}</p>
             </div>
 
-            <form onSubmit={submit} className="space-y-5 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)] sm:p-8">
+            <form onSubmit={submit} className="space-y-6 rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-card)] sm:p-8">
               {step === 0 && (
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field label="Prénom" value={data.firstName} onChange={update("firstName")} required />
