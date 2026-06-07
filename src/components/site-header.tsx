@@ -4,6 +4,7 @@ import { Leaf } from "lucide-react";
 const nav = [
   { to: "/", label: "Accueil" },
   { to: "/programmes", label: "Programmes" },
+  { to: "/evaluation", label: "Évaluation" },
   { to: "/a-propos", label: "À propos" },
   { to: "/contact", label: "Contact" },
 ] as const;
