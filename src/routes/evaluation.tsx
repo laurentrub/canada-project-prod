@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { supabase } from "@/lib/supabase";
 import { CheckCircle2, ArrowRight, ArrowLeft, ClipboardCheck, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/evaluation")({
@@ -104,7 +105,10 @@ function Evaluation() {
   const next = () => setStep((s) => Math.min(s + 1, steps.length - 1));
   const prev = () => setStep((s) => Math.max(s - 1, 0));
 
-  const submit = (e: React.FormEvent) => {
+  const [submitError, setSubmitError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (data.email !== data.emailConfirm) {
       alert("Les deux adresses email ne correspondent pas.");
@@ -114,8 +118,64 @@ function Evaluation() {
       alert("Veuillez accepter le traitement de vos informations.");
       return;
     }
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setSubmitError("");
+    setSubmitting(true);
+
+    const { error } = await supabase.from("evaluations").insert({
+      first_name: data.firstName,
+      last_name: data.lastName,
+      email: data.email,
+      birth_year: data.birthYear,
+      gender: data.gender,
+      nationality: data.nationality,
+      country: data.country,
+      city: data.city,
+      marital_status: data.maritalStatus,
+      spouse_accompanies: data.spouseAccompanies,
+      children: data.children,
+      children_accompany: data.childrenAccompany,
+      education: data.education,
+      field_of_study: data.fieldOfStudy,
+      diploma_country: data.diplomaCountry,
+      years_of_study: data.yearsOfStudy,
+      eca_done: data.ecaDone,
+      french_level: data.frenchLevel,
+      french_test: data.frenchTest,
+      french_score: data.frenchScore,
+      english_level: data.englishLevel,
+      english_test: data.englishTest,
+      english_score: data.englishScore,
+      experience_years: data.experienceYears,
+      occupation: data.occupation,
+      noc_category: data.nocCategory,
+      self_employed: data.selfEmployed,
+      management_experience: data.managementExperience,
+      job_offer: data.jobOffer,
+      canada_study: data.canadaStudy,
+      canada_work: data.canadaWork,
+      canada_visits: data.canadaVisits,
+      family_in_canada: data.familyInCanada,
+      family_relation: data.familyRelation,
+      previous_application: data.previousApplication,
+      refusal_history: data.refusalHistory,
+      program: data.program,
+      province: data.province,
+      timeline: data.timeline,
+      budget: data.budget,
+      net_worth: data.netWorth,
+      hear_about: data.hearAbout,
+      notes: data.notes,
+      consent: data.consent,
+    });
+
+    if (error) {
+      setSubmitError("Une erreur est survenue. Veuillez réessayer.");
+    } else {
+      setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    setSubmitting(false);
   };
 
   return (
@@ -249,6 +309,9 @@ function Evaluation() {
                 </div>
               )}
 
+              {submitError && (
+                <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{submitError}</p>
+              )}
               <div className="flex items-center justify-between gap-3 pt-2">
                 <button
                   type="button"
@@ -269,9 +332,10 @@ function Evaluation() {
                 ) : (
                   <button
                     type="submit"
-                    className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.02]"
+                    disabled={submitting}
+                    className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.02] disabled:opacity-50"
                   >
-                    Envoyer mon évaluation <CheckCircle2 className="h-4 w-4" />
+                    {submitting ? "Envoi…" : <><CheckCircle2 className="h-4 w-4" /> Envoyer mon évaluation</>}
                   </button>
                 )}
               </div>

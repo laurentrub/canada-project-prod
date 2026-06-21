@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 import { Calendar } from "@/components/ui/calendar";
 import { Clock, User, Video, CreditCard, CheckCircle2 } from "lucide-react";
 
@@ -24,6 +25,8 @@ function Consultation() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [confirmed, setConfirmed] = useState(false);
+  const [bookingError, setBookingError] = useState("");
+  const [booking, setBooking] = useState(false);
 
   if (confirmed && date && slot) {
     return (
@@ -109,7 +112,23 @@ function Consultation() {
 
           {date && slot && (
             <form
-              onSubmit={(e) => { e.preventDefault(); setConfirmed(true); }}
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setBookingError("");
+                setBooking(true);
+                const { error } = await supabase.from("consultations").insert({
+                  date: date.toISOString().slice(0, 10),
+                  slot,
+                  full_name: name,
+                  email,
+                });
+                if (error) {
+                  setBookingError("Une erreur est survenue. Veuillez réessayer.");
+                } else {
+                  setConfirmed(true);
+                }
+                setBooking(false);
+              }}
               className="mt-6 space-y-3 border-t border-border pt-6"
             >
               <div>
@@ -131,11 +150,15 @@ function Consultation() {
                   className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
                 />
               </div>
+              {bookingError && (
+                <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{bookingError}</p>
+              )}
               <button
                 type="submit"
-                className="w-full rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.01]"
+                disabled={booking}
+                className="w-full rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.01] disabled:opacity-50"
               >
-                Confirmer le rendez-vous — 150 $
+                {booking ? "Envoi…" : "Confirmer le rendez-vous — 150 $"}
               </button>
               <p className="text-xs text-muted-foreground text-center">
                 Le paiement sera traité après confirmation par email.

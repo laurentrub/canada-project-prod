@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Mail, Clock, Globe2 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -17,6 +18,35 @@ export const Route = createFileRoute("/contact")({
 
 function Contact() {
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    const fd = new FormData(e.currentTarget);
+
+    const { error } = await supabase.from("contact_submissions").insert({
+      first_name: fd.get("firstName") as string,
+      last_name: fd.get("lastName") as string,
+      email: fd.get("email") as string,
+      country: fd.get("country") as string,
+      nationality: fd.get("nationality") as string,
+      program: fd.get("program") as string,
+      message: fd.get("message") as string,
+    });
+
+    if (error) {
+      setError("Une erreur est survenue. Veuillez réessayer.");
+    } else {
+      setSent(true);
+    }
+
+    setLoading(false);
+  };
 
   return (
     <div>
@@ -57,10 +87,8 @@ function Contact() {
         </div>
 
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            setSent(true);
-          }}
+          ref={formRef}
+          onSubmit={handleSubmit}
           className="space-y-4 rounded-2xl border border-border bg-card p-8 shadow-[var(--shadow-card)]"
         >
           {sent ? (
@@ -79,7 +107,7 @@ function Contact() {
               <Field label="Nationalité" name="nationality" />
               <div>
                 <label className="text-sm font-medium">Programme d'intérêt</label>
-                <select className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm">
+                <select name="program" className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm">
                   <option>Je ne sais pas encore</option>
                   <option>Entrée Express</option>
                   <option>PNP</option>
@@ -91,16 +119,20 @@ function Contact() {
               </div>
               <div>
                 <label className="text-sm font-medium">Votre message</label>
-                <textarea rows={4} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" />
+                <textarea name="message" rows={4} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" />
               </div>
+              {error && (
+                <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>
+              )}
               <p className="text-xs text-muted-foreground">
                 Notre équipe vous répond uniquement par email. Aucun appel téléphonique n'est requis.
               </p>
               <button
                 type="submit"
-                className="w-full rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.01]"
+                disabled={loading}
+                className="w-full rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.01] disabled:opacity-50"
               >
-                Demander une consultation
+                {loading ? "Envoi…" : "Demander une consultation"}
               </button>
             </>
           )}
