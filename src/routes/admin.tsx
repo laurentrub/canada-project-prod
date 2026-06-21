@@ -22,21 +22,28 @@ function AdminLayout() {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return;
       if (!data.session) {
-        navigate({ to: "/admin-login" });
+        window.location.replace("/admin-login");
       } else {
         setUser(data.session.user);
+        setChecking(false);
       }
-      setChecking(false);
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) navigate({ to: "/admin-login" });
+      if (!mounted) return;
+      if (!session) window.location.replace("/admin-login");
     });
 
-    return () => listener.subscription.unsubscribe();
-  }, [navigate]);
+    return () => {
+      mounted = false;
+      listener.subscription.unsubscribe();
+    };
+  }, []);
 
   const signOut = async () => {
     await supabase.auth.signOut();
