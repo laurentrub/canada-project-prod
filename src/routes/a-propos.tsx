@@ -4,9 +4,9 @@ import { Award, HeartHandshake, ShieldCheck } from "lucide-react";
 export const Route = createFileRoute("/a-propos")({
   head: () => ({
     meta: [
-      { title: "À propos — Maple Path" },
+      { title: "À propos — Expat Boost" },
       { name: "description", content: "Une équipe de conseillers réglementés dédiée à votre projet d'immigration canadien." },
-      { property: "og:title", content: "À propos — Maple Path" },
+      { property: "og:title", content: "À propos — Expat Boost" },
       { property: "og:description", content: "Une équipe de conseillers réglementés dédiée à votre projet." },
     ],
     links: [{ rel: "canonical", href: "/a-propos" }],
@@ -28,7 +28,7 @@ function APropos() {
           <p className="text-sm font-semibold uppercase tracking-wider text-primary">À propos</p>
           <h1 className="mt-2 font-display text-5xl font-bold">Construire des avenirs canadiens, un dossier à la fois.</h1>
           <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            Maple Path a été fondé pour rendre l'immigration accessible : démystifier les programmes, accompagner avec rigueur et célébrer chaque arrivée.
+            Expat Boost a été fondé pour rendre l'immigration accessible : démystifier les programmes, accompagner avec rigueur et célébrer chaque arrivée.
           </p>
         </div>
       </section>

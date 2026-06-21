@@ -16,9 +16,9 @@ import heroImage from "@/assets/hero-canada.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Maple Path — Immigration au Canada simplifiée" },
+      { title: "Expat Boost — Immigration au Canada simplifiée" },
       { name: "description", content: "Conseillers experts. Découvrez les 60+ programmes d'immigration du Canada et obtenez votre consultation personnalisée." },
-      { property: "og:title", content: "Maple Path — Immigration au Canada simplifiée" },
+      { property: "og:title", content: "Expat Boost — Immigration au Canada simplifiée" },
       { property: "og:description", content: "Conseillers experts. Découvrez les 60+ programmes d'immigration du Canada et obtenez votre consultation personnalisée." },
     ],
   }),
@@ -129,7 +129,7 @@ function Index() {
       <section className="bg-secondary/40 py-20">
         <div className="mx-auto grid max-w-6xl gap-12 px-6 md:grid-cols-2">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wider text-primary">Pourquoi Maple Path</p>
+            <p className="text-sm font-semibold uppercase tracking-wider text-primary">Pourquoi Expat Boost</p>
             <h2 className="mt-2 font-display text-4xl font-bold">Un dossier solide, un esprit tranquille.</h2>
             <p className="mt-4 text-muted-foreground">
               Chaque dossier est unique. Nous construisons une stratégie sur-mesure adaptée à votre profil, vos objectifs et la réalité du marché canadien.

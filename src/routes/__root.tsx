@@ -81,10 +81,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Maple Path — Services d'immigration au Canada" },
+      { title: "Expat Boost — Services d'immigration au Canada" },
       { name: "description", content: "Conseillers experts en immigration canadienne. Découvrez les 60+ programmes et obtenez votre consultation." },
-      { name: "author", content: "Maple Path" },
-      { property: "og:title", content: "Maple Path — Services d'immigration au Canada" },
+      { name: "author", content: "Expat Boost" },
+      { property: "og:title", content: "Expat Boost — Services d'immigration au Canada" },
       { property: "og:description", content: "Conseillers experts en immigration canadienne. Découvrez les 60+ programmes et obtenez votre consultation." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

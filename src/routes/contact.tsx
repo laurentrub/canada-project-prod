@@ -5,9 +5,9 @@ import { useState } from "react";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Maple Path" },
+      { title: "Contact — Expat Boost" },
       { name: "description", content: "Réservez votre consultation gratuite de 30 minutes avec un conseiller en immigration." },
-      { property: "og:title", content: "Contact — Maple Path" },
+      { property: "og:title", content: "Contact — Expat Boost" },
       { property: "og:description", content: "Réservez votre consultation gratuite de 30 minutes." },
     ],
     links: [{ rel: "canonical", href: "/contact" }],
@@ -36,7 +36,7 @@ function Contact() {
             <span className="grid h-10 w-10 flex-none place-items-center rounded-lg bg-primary/10 text-primary"><Mail className="h-4 w-4" /></span>
             <div>
               <p className="font-semibold">Email</p>
-              <p className="text-sm text-muted-foreground">contact@maplepath.ca</p>
+              <p className="text-sm text-muted-foreground">contact@expatboost.com</p>
               <p className="text-xs text-muted-foreground mt-1">Notre canal de communication officiel.</p>
             </div>
           </div>

@@ -6,9 +6,9 @@ import { Clock, User, Video, CreditCard, CheckCircle2 } from "lucide-react";
 export const Route = createFileRoute("/consultation")({
   head: () => ({
     meta: [
-      { title: "Prendre rendez-vous — Maple Path" },
+      { title: "Prendre rendez-vous — Expat Boost" },
       { name: "description", content: "Réservez votre consultation en immigration de 60 minutes en visioconférence." },
-      { property: "og:title", content: "Prendre rendez-vous — Maple Path" },
+      { property: "og:title", content: "Prendre rendez-vous — Expat Boost" },
       { property: "og:description", content: "Réservez votre consultation en immigration de 60 minutes en visioconférence." },
     ],
     links: [{ rel: "canonical", href: "/consultation" }],
@@ -63,7 +63,7 @@ function Consultation() {
 
           <ul className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
             <Detail icon={<Clock className="h-4 w-4" />} label="Durée" value="60 minutes" />
-            <Detail icon={<User className="h-4 w-4" />} label="Host" value="Maple Path — IMMIGRATION" />
+            <Detail icon={<User className="h-4 w-4" />} label="Host" value="Expat Boost — IMMIGRATION" />
             <Detail icon={<Video className="h-4 w-4" />} label="Lieu" value="Lien de connexion fourni à la confirmation" />
             <Detail icon={<CreditCard className="h-4 w-4" />} label="Paiement" value="150 $ CAD" />
           </ul>
