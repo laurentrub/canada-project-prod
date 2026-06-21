@@ -126,16 +126,17 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const location = useLocation();
-  const hideStickyCta = location.pathname.startsWith("/evaluation");
+  const isAdmin = location.pathname.startsWith("/admin");
+  const hideStickyCta = location.pathname.startsWith("/evaluation") || isAdmin;
 
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col">
-        <SiteHeader />
+        {!isAdmin && <SiteHeader />}
         <main className={`flex-1 ${hideStickyCta ? "" : "pb-20 md:pb-0"}`}>
           <Outlet />
         </main>
-        <SiteFooter />
+        {!isAdmin && <SiteFooter />}
         {!hideStickyCta && (
           <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 p-3 shadow-[0_-6px_20px_-10px_rgba(0,0,0,0.25)] backdrop-blur md:hidden">
             <Link
