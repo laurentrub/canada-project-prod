@@ -5,9 +5,9 @@ import { CheckCircle2, ArrowRight, ArrowLeft, ClipboardCheck, ShieldCheck } from
 export const Route = createFileRoute("/evaluation")({
   head: () => ({
     meta: [
-      { title: "Évaluation gratuite — Maple Path" },
+      { title: "Évaluation gratuite — Expat Boost" },
       { name: "description", content: "Évaluez gratuitement votre admissibilité à l'immigration canadienne en quelques minutes." },
-      { property: "og:title", content: "Évaluation d'immigration gratuite — Maple Path" },
+      { property: "og:title", content: "Évaluation d'immigration gratuite — Expat Boost" },
       { property: "og:description", content: "Découvrez en quelques minutes les programmes d'immigration canadiens qui vous correspondent." },
     ],
     links: [{ rel: "canonical", href: "/evaluation" }],
@@ -104,7 +104,10 @@ function Evaluation() {
   const next = () => setStep((s) => Math.min(s + 1, steps.length - 1));
   const prev = () => setStep((s) => Math.max(s - 1, 0));
 
-  const submit = (e: React.FormEvent) => {
+  const [submitError, setSubmitError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (data.email !== data.emailConfirm) {
       alert("Les deux adresses email ne correspondent pas.");
@@ -114,8 +117,23 @@ function Evaluation() {
       alert("Veuillez accepter le traitement de vos informations.");
       return;
     }
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setSubmitError("");
+    setSubmitting(true);
+
+    const res = await fetch("/api/evaluation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+      setSubmitError("Une erreur est survenue. Veuillez réessayer.");
+    } else {
+      setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    setSubmitting(false);
   };
 
   return (
@@ -229,7 +247,7 @@ function Evaluation() {
                   <Select label="Délai souhaité pour l'arrivée" value={data.timeline} onChange={update("timeline")} options={["Moins de 6 mois", "6-12 mois", "1-2 ans", "Plus de 2 ans", "Pas encore décidé"]} required />
                   <Select label="Budget pour les démarches" value={data.budget} onChange={update("budget")} options={["Moins de 5 000 $ CAD", "5 000-15 000 $ CAD", "15 000-30 000 $ CAD", "Plus de 30 000 $ CAD"]} required />
                   <Select label="Fonds disponibles pour l'installation" value={data.netWorth} onChange={update("netWorth")} options={["Moins de 10 000 $ CAD", "10 000-25 000 $ CAD", "25 000-50 000 $ CAD", "50 000-100 000 $ CAD", "Plus de 100 000 $ CAD"]} required />
-                  <Select label="Comment avez-vous connu Maple Path ?" value={data.hearAbout} onChange={update("hearAbout")} options={["Recherche Google", "Réseaux sociaux", "Recommandation", "Article / blog", "Autre"]} />
+                  <Select label="Comment avez-vous connu Expat Boost ?" value={data.hearAbout} onChange={update("hearAbout")} options={["Recherche Google", "Réseaux sociaux", "Recommandation", "Article / blog", "Autre"]} />
                   <div className="sm:col-span-2">
                     <label className="text-base font-medium">Notes complémentaires</label>
                     <textarea rows={4} value={data.notes} onChange={update("notes")} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2.5 text-base" placeholder="Précisez votre situation, vos motivations ou vos questions..." />
@@ -243,12 +261,15 @@ function Evaluation() {
                       required
                     />
                     <span className="text-muted-foreground">
-                      J'accepte que Maple Path utilise les informations ci-dessus pour évaluer mon admissibilité et me répondre par email. Aucune donnée n'est partagée avec des tiers.
+                      J'accepte que Expat Boost utilise les informations ci-dessus pour évaluer mon admissibilité et me répondre par email. Aucune donnée n'est partagée avec des tiers.
                     </span>
                   </label>
                 </div>
               )}
 
+              {submitError && (
+                <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{submitError}</p>
+              )}
               <div className="flex items-center justify-between gap-3 pt-2">
                 <button
                   type="button"
@@ -269,9 +290,10 @@ function Evaluation() {
                 ) : (
                   <button
                     type="submit"
-                    className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.02]"
+                    disabled={submitting}
+                    className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.02] disabled:opacity-50"
                   >
-                    Envoyer mon évaluation <CheckCircle2 className="h-4 w-4" />
+                    {submitting ? "Envoi…" : <><CheckCircle2 className="h-4 w-4" /> Envoyer mon évaluation</>}
                   </button>
                 )}
               </div>

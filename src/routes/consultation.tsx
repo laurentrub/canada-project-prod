@@ -6,9 +6,9 @@ import { Clock, User, Video, CreditCard, CheckCircle2 } from "lucide-react";
 export const Route = createFileRoute("/consultation")({
   head: () => ({
     meta: [
-      { title: "Prendre rendez-vous — Maple Path" },
+      { title: "Prendre rendez-vous — Expat Boost" },
       { name: "description", content: "Réservez votre consultation en immigration de 60 minutes en visioconférence." },
-      { property: "og:title", content: "Prendre rendez-vous — Maple Path" },
+      { property: "og:title", content: "Prendre rendez-vous — Expat Boost" },
       { property: "og:description", content: "Réservez votre consultation en immigration de 60 minutes en visioconférence." },
     ],
     links: [{ rel: "canonical", href: "/consultation" }],
@@ -24,6 +24,8 @@ function Consultation() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [confirmed, setConfirmed] = useState(false);
+  const [bookingError, setBookingError] = useState("");
+  const [booking, setBooking] = useState(false);
 
   if (confirmed && date && slot) {
     return (
@@ -63,7 +65,7 @@ function Consultation() {
 
           <ul className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
             <Detail icon={<Clock className="h-4 w-4" />} label="Durée" value="60 minutes" />
-            <Detail icon={<User className="h-4 w-4" />} label="Host" value="Maple Path — IMMIGRATION" />
+            <Detail icon={<User className="h-4 w-4" />} label="Host" value="Expat Boost — IMMIGRATION" />
             <Detail icon={<Video className="h-4 w-4" />} label="Lieu" value="Lien de connexion fourni à la confirmation" />
             <Detail icon={<CreditCard className="h-4 w-4" />} label="Paiement" value="150 $ CAD" />
           </ul>
@@ -109,7 +111,27 @@ function Consultation() {
 
           {date && slot && (
             <form
-              onSubmit={(e) => { e.preventDefault(); setConfirmed(true); }}
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setBookingError("");
+                setBooking(true);
+                const res = await fetch("/api/consultation", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    date: date.toISOString().slice(0, 10),
+                    slot,
+                    full_name: name,
+                    email,
+                  }),
+                });
+                if (!res.ok) {
+                  setBookingError("Une erreur est survenue. Veuillez réessayer.");
+                } else {
+                  setConfirmed(true);
+                }
+                setBooking(false);
+              }}
               className="mt-6 space-y-3 border-t border-border pt-6"
             >
               <div>
@@ -131,11 +153,15 @@ function Consultation() {
                   className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
                 />
               </div>
+              {bookingError && (
+                <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{bookingError}</p>
+              )}
               <button
                 type="submit"
-                className="w-full rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.01]"
+                disabled={booking}
+                className="w-full rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.01] disabled:opacity-50"
               >
-                Confirmer le rendez-vous — 150 $
+                {booking ? "Envoi…" : "Confirmer le rendez-vous — 150 $"}
               </button>
               <p className="text-xs text-muted-foreground text-center">
                 Le paiement sera traité après confirmation par email.

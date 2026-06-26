@@ -4,9 +4,9 @@ import { ArrowRight } from "lucide-react";
 export const Route = createFileRoute("/programmes")({
   head: () => ({
     meta: [
-      { title: "Programmes d'immigration — Maple Path" },
+      { title: "Programmes d'immigration — Expat Boost" },
       { name: "description", content: "Explorez les principales voies d'immigration vers le Canada : Express Entry, PNP, études, travail, famille." },
-      { property: "og:title", content: "Programmes d'immigration — Maple Path" },
+      { property: "og:title", content: "Programmes d'immigration — Expat Boost" },
       { property: "og:description", content: "Explorez les principales voies d'immigration vers le Canada." },
     ],
     links: [{ rel: "canonical", href: "/programmes" }],

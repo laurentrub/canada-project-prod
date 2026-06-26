@@ -16,7 +16,7 @@ export function SiteHeader() {
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-foreground">
             <Leaf className="h-4 w-4" />
           </span>
-          Maple Path
+          Expat Boost
         </Link>
         <nav className="hidden items-center gap-8 md:flex">
           {nav.map((item) => (

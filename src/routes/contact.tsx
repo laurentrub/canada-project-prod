@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Mail, Clock, Globe2 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Maple Path" },
+      { title: "Contact — Expat Boost" },
       { name: "description", content: "Réservez votre consultation gratuite de 30 minutes avec un conseiller en immigration." },
-      { property: "og:title", content: "Contact — Maple Path" },
+      { property: "og:title", content: "Contact — Expat Boost" },
       { property: "og:description", content: "Réservez votre consultation gratuite de 30 minutes." },
     ],
     links: [{ rel: "canonical", href: "/contact" }],
@@ -17,6 +17,39 @@ export const Route = createFileRoute("/contact")({
 
 function Contact() {
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    const fd = new FormData(e.currentTarget);
+
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        first_name: fd.get("firstName"),
+        last_name: fd.get("lastName"),
+        email: fd.get("email"),
+        country: fd.get("country"),
+        nationality: fd.get("nationality"),
+        program: fd.get("program"),
+        message: fd.get("message"),
+      }),
+    });
+
+    if (!res.ok) {
+      setError("Une erreur est survenue. Veuillez réessayer.");
+    } else {
+      setSent(true);
+    }
+
+    setLoading(false);
+  };
 
   return (
     <div>
@@ -36,7 +69,7 @@ function Contact() {
             <span className="grid h-10 w-10 flex-none place-items-center rounded-lg bg-primary/10 text-primary"><Mail className="h-4 w-4" /></span>
             <div>
               <p className="font-semibold">Email</p>
-              <p className="text-sm text-muted-foreground">contact@maplepath.ca</p>
+              <p className="text-sm text-muted-foreground">contact@expatboost.com</p>
               <p className="text-xs text-muted-foreground mt-1">Notre canal de communication officiel.</p>
             </div>
           </div>
@@ -57,10 +90,8 @@ function Contact() {
         </div>
 
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            setSent(true);
-          }}
+          ref={formRef}
+          onSubmit={handleSubmit}
           className="space-y-4 rounded-2xl border border-border bg-card p-8 shadow-[var(--shadow-card)]"
         >
           {sent ? (
@@ -79,7 +110,7 @@ function Contact() {
               <Field label="Nationalité" name="nationality" />
               <div>
                 <label className="text-sm font-medium">Programme d'intérêt</label>
-                <select className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm">
+                <select name="program" className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm">
                   <option>Je ne sais pas encore</option>
                   <option>Entrée Express</option>
                   <option>PNP</option>
@@ -91,16 +122,20 @@ function Contact() {
               </div>
               <div>
                 <label className="text-sm font-medium">Votre message</label>
-                <textarea rows={4} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" />
+                <textarea name="message" rows={4} className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" />
               </div>
+              {error && (
+                <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>
+              )}
               <p className="text-xs text-muted-foreground">
                 Notre équipe vous répond uniquement par email. Aucun appel téléphonique n'est requis.
               </p>
               <button
                 type="submit"
-                className="w-full rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.01]"
+                disabled={loading}
+                className="w-full rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.01] disabled:opacity-50"
               >
-                Demander une consultation
+                {loading ? "Envoi…" : "Demander une consultation"}
               </button>
             </>
           )}
