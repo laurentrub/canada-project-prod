@@ -33,6 +33,7 @@ const STATUS_COLORS: Record<string, string> = {
 function AdminConsultations() {
   const [rows, setRows] = useState<Consultation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   const fetchRows = async () => {
     const { data } = await supabase
@@ -62,47 +63,48 @@ function AdminConsultations() {
       ) : rows.length === 0 ? (
         <p className="text-sm text-muted-foreground">Aucune consultation pour le moment.</p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border bg-card shadow-[var(--shadow-card)]">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border bg-secondary/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
-                <th className="px-4 py-3">Date</th>
-                <th className="px-4 py-3">Créneau</th>
-                <th className="px-4 py-3">Client</th>
-                <th className="px-4 py-3">Email</th>
-                <th className="px-4 py-3">Statut</th>
-                <th className="px-4 py-3">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {rows.map((r) => (
-                <tr key={r.id} className="hover:bg-secondary/30">
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    {new Date(r.date).toLocaleDateString("fr-CA", { weekday: "short", day: "numeric", month: "short" })}
-                  </td>
-                  <td className="px-4 py-3 font-medium">{r.slot} EST</td>
-                  <td className="px-4 py-3 font-medium whitespace-nowrap">{r.full_name}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{r.email}</td>
-                  <td className="px-4 py-3">
-                    <select
-                      value={r.status}
-                      onChange={(e) => updateStatus(r.id, e.target.value)}
-                      className={`rounded-full px-2 py-1 text-xs font-semibold border-0 cursor-pointer ${STATUS_COLORS[r.status]}`}
-                    >
-                      {Object.entries(STATUS_LABELS).map(([val, label]) => (
-                        <option key={val} value={val}>{label}</option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="px-4 py-3">
-                    <a href={`mailto:${r.email}`} className="text-xs text-primary underline-offset-2 hover:underline">
-                      Email
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="space-y-3">
+          {rows.map((r) => (
+            <div key={r.id} className="rounded-xl border border-border bg-card shadow-[var(--shadow-card)]">
+              <button
+                onClick={() => setExpanded(expanded === r.id ? null : r.id)}
+                className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+              >
+                <div>
+                  <p className="font-medium">{r.full_name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(r.date).toLocaleDateString("fr-CA", { weekday: "short", day: "numeric", month: "short" })} · {r.slot} EST · {r.email}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <select
+                    value={r.status}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={(e) => updateStatus(r.id, e.target.value)}
+                    className={`rounded-full px-2 py-1 text-xs font-semibold border-0 cursor-pointer ${STATUS_COLORS[r.status]}`}
+                  >
+                    {Object.entries(STATUS_LABELS).map(([val, label]) => (
+                      <option key={val} value={val}>{label}</option>
+                    ))}
+                  </select>
+                  <span className="text-xs text-muted-foreground">{expanded === r.id ? "▲" : "▼"}</span>
+                </div>
+              </button>
+
+              {expanded === r.id && (
+                <div className="border-t border-border px-5 py-4 text-sm text-muted-foreground space-y-2">
+                  <p><span className="font-medium text-foreground">Client :</span> {r.full_name}</p>
+                  <p><span className="font-medium text-foreground">Email :</span> {r.email}</p>
+                  <p><span className="font-medium text-foreground">Date :</span> {new Date(r.date).toLocaleDateString("fr-CA", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
+                  <p><span className="font-medium text-foreground">Créneau :</span> {r.slot} EST</p>
+                  <p><span className="font-medium text-foreground">Soumis le :</span> {new Date(r.created_at).toLocaleDateString("fr-CA")}</p>
+                  <a href={`mailto:${r.email}`} className="inline-block mt-2 rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground">
+                    Envoyer le lien de visio
+                  </a>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>
