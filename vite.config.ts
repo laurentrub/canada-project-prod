@@ -13,5 +13,8 @@ export default defineConfig({
   ],
   server: {
     allowedHosts: ["oppressor-quarters-carload.ngrok-free.dev"],
+    proxy: {
+      "/api": "http://localhost:3000",
+    },
   },
 });
