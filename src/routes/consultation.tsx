@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { Calendar } from "@/components/ui/calendar";
 import { Clock, User, Video, CreditCard, CheckCircle2 } from "lucide-react";
 
@@ -116,13 +115,17 @@ function Consultation() {
                 e.preventDefault();
                 setBookingError("");
                 setBooking(true);
-                const { error } = await supabase.from("consultations").insert({
-                  date: date.toISOString().slice(0, 10),
-                  slot,
-                  full_name: name,
-                  email,
+                const res = await fetch("/api/consultation", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    date: date.toISOString().slice(0, 10),
+                    slot,
+                    full_name: name,
+                    email,
+                  }),
                 });
-                if (error) {
+                if (!res.ok) {
                   setBookingError("Une erreur est survenue. Veuillez réessayer.");
                 } else {
                   setConfirmed(true);

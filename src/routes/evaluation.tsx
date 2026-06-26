@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { CheckCircle2, ArrowRight, ArrowLeft, ClipboardCheck, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/evaluation")({
@@ -121,54 +120,13 @@ function Evaluation() {
     setSubmitError("");
     setSubmitting(true);
 
-    const { error } = await supabase.from("evaluations").insert({
-      first_name: data.firstName,
-      last_name: data.lastName,
-      email: data.email,
-      birth_year: data.birthYear,
-      gender: data.gender,
-      nationality: data.nationality,
-      country: data.country,
-      city: data.city,
-      marital_status: data.maritalStatus,
-      spouse_accompanies: data.spouseAccompanies,
-      children: data.children,
-      children_accompany: data.childrenAccompany,
-      education: data.education,
-      field_of_study: data.fieldOfStudy,
-      diploma_country: data.diplomaCountry,
-      years_of_study: data.yearsOfStudy,
-      eca_done: data.ecaDone,
-      french_level: data.frenchLevel,
-      french_test: data.frenchTest,
-      french_score: data.frenchScore,
-      english_level: data.englishLevel,
-      english_test: data.englishTest,
-      english_score: data.englishScore,
-      experience_years: data.experienceYears,
-      occupation: data.occupation,
-      noc_category: data.nocCategory,
-      self_employed: data.selfEmployed,
-      management_experience: data.managementExperience,
-      job_offer: data.jobOffer,
-      canada_study: data.canadaStudy,
-      canada_work: data.canadaWork,
-      canada_visits: data.canadaVisits,
-      family_in_canada: data.familyInCanada,
-      family_relation: data.familyRelation,
-      previous_application: data.previousApplication,
-      refusal_history: data.refusalHistory,
-      program: data.program,
-      province: data.province,
-      timeline: data.timeline,
-      budget: data.budget,
-      net_worth: data.netWorth,
-      hear_about: data.hearAbout,
-      notes: data.notes,
-      consent: data.consent,
+    const res = await fetch("/api/evaluation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
     });
 
-    if (error) {
+    if (!res.ok) {
       setSubmitError("Une erreur est survenue. Veuillez réessayer.");
     } else {
       setSubmitted(true);

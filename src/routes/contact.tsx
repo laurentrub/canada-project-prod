@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Mail, Clock, Globe2 } from "lucide-react";
 import { useRef, useState } from "react";
-import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -29,17 +28,21 @@ function Contact() {
 
     const fd = new FormData(e.currentTarget);
 
-    const { error } = await supabase.from("contact_submissions").insert({
-      first_name: fd.get("firstName") as string,
-      last_name: fd.get("lastName") as string,
-      email: fd.get("email") as string,
-      country: fd.get("country") as string,
-      nationality: fd.get("nationality") as string,
-      program: fd.get("program") as string,
-      message: fd.get("message") as string,
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        first_name: fd.get("firstName"),
+        last_name: fd.get("lastName"),
+        email: fd.get("email"),
+        country: fd.get("country"),
+        nationality: fd.get("nationality"),
+        program: fd.get("program"),
+        message: fd.get("message"),
+      }),
     });
 
-    if (error) {
+    if (!res.ok) {
       setError("Une erreur est survenue. Veuillez réessayer.");
     } else {
       setSent(true);
