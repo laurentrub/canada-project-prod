@@ -28,7 +28,13 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-border/60 py-4 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Expat Boost. Tous droits réservés.
+        <span>© {new Date().getFullYear()} Expat Boost. Tous droits réservés.</span>
+        <span className="mx-2">·</span>
+        <Link to="/mentions-legales" className="hover:text-foreground">Mentions légales</Link>
+        <span className="mx-2">·</span>
+        <Link to="/confidentialite" className="hover:text-foreground">Confidentialité</Link>
+        <span className="mx-2">·</span>
+        <Link to="/cgu" className="hover:text-foreground">CGU</Link>
       </div>
     </footer>
   );
