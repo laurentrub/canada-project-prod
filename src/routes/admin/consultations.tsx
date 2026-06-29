@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { Send, CheckCircle2, AlertCircle } from "lucide-react";
 
 type Consultation = {
   id: string;
@@ -10,6 +11,7 @@ type Consultation = {
   full_name: string;
   email: string;
   status: string;
+  payment_email_sent_at: string | null;
 };
 
 export const Route = createFileRoute("/admin/consultations")({
@@ -34,6 +36,8 @@ function AdminConsultations() {
   const [rows, setRows] = useState<Consultation[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [sending, setSending] = useState<string | null>(null);
+  const [sendResult, setSendResult] = useState<Record<string, "ok" | "error">>({});
 
   const fetchRows = async () => {
     const { data } = await supabase
@@ -47,6 +51,30 @@ function AdminConsultations() {
   const updateStatus = async (id: string, status: string) => {
     await supabase.from("consultations").update({ status }).eq("id", id);
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
+  };
+
+  const sendPaymentEmail = async (id: string) => {
+    setSending(id);
+    try {
+      const res = await fetch("/api/send-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ consultation_id: id }),
+      });
+      if (res.ok) {
+        setSendResult((prev) => ({ ...prev, [id]: "ok" }));
+        setRows((prev) =>
+          prev.map((r) =>
+            r.id === id ? { ...r, payment_email_sent_at: new Date().toISOString() } : r
+          )
+        );
+      } else {
+        setSendResult((prev) => ({ ...prev, [id]: "error" }));
+      }
+    } catch {
+      setSendResult((prev) => ({ ...prev, [id]: "error" }));
+    }
+    setSending(null);
   };
 
   useEffect(() => { fetchRows(); }, []);
@@ -77,6 +105,11 @@ function AdminConsultations() {
                   </p>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
+                  {r.payment_email_sent_at && (
+                    <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700">
+                      <CheckCircle2 className="h-3 w-3" /> Paiement envoyé
+                    </span>
+                  )}
                   <select
                     value={r.status}
                     onClick={(e) => e.stopPropagation()}
@@ -98,9 +131,38 @@ function AdminConsultations() {
                   <p><span className="font-medium text-foreground">Date :</span> {new Date(r.date).toLocaleDateString("fr-CA", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
                   <p><span className="font-medium text-foreground">Créneau :</span> {r.slot} EST</p>
                   <p><span className="font-medium text-foreground">Soumis le :</span> {new Date(r.created_at).toLocaleDateString("fr-CA")}</p>
-                  <a href={`mailto:${r.email}`} className="inline-block mt-2 rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground">
-                    Envoyer le lien de visio
-                  </a>
+
+                  {r.payment_email_sent_at && (
+                    <p className="text-xs text-green-700">
+                      <CheckCircle2 className="inline h-3.5 w-3.5 mr-1" />
+                      Infos de paiement envoyées le {new Date(r.payment_email_sent_at).toLocaleDateString("fr-CA")} à {new Date(r.payment_email_sent_at).toLocaleTimeString("fr-CA", { hour: "2-digit", minute: "2-digit" })}
+                    </p>
+                  )}
+
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <a
+                      href={`mailto:${r.email}`}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground"
+                    >
+                      Envoyer le lien de visio
+                    </a>
+
+                    <button
+                      onClick={() => sendPaymentEmail(r.id)}
+                      disabled={sending === r.id}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-4 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-secondary disabled:opacity-60"
+                    >
+                      {sending === r.id ? (
+                        <>Envoi…</>
+                      ) : sendResult[r.id] === "ok" ? (
+                        <><CheckCircle2 className="h-3.5 w-3.5 text-green-600" /> Envoyé !</>
+                      ) : sendResult[r.id] === "error" ? (
+                        <><AlertCircle className="h-3.5 w-3.5 text-red-500" /> Échec</>
+                      ) : (
+                        <><Send className="h-3.5 w-3.5" /> {r.payment_email_sent_at ? "Renvoyer les infos de paiement" : "Envoyer les infos de paiement"}</>
+                      )}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

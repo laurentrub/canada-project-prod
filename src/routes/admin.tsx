@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, Link, useNavigate, useLocation } from "@tansta
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
-import { LayoutDashboard, ClipboardList, CalendarCheck, Users, LogOut } from "lucide-react";
+import { LayoutDashboard, ClipboardList, CalendarCheck, Users, LogOut, Wallet } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   component: AdminLayout,
@@ -13,6 +13,7 @@ const nav = [
   { to: "/admin/contacts", label: "Contacts", icon: LayoutDashboard },
   { to: "/admin/consultations", label: "Consultations", icon: CalendarCheck },
   { to: "/admin/equipe", label: "Équipe", icon: Users },
+  { to: "/admin/paiement", label: "Paiement", icon: Wallet },
 ];
 
 function AdminLayout() {
