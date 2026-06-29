@@ -29,9 +29,6 @@ function MentionsLegales() {
       <section className="mt-8 space-y-3">
         <h2 className="text-lg font-semibold">2. Hébergement</h2>
         <p className="text-muted-foreground">
-          Le site est hébergé par <strong>Vercel Inc.</strong>, 340 Pine Street, Suite 701, San Francisco, CA 94104, États-Unis — <a href="https://vercel.com" className="text-primary underline-offset-2 hover:underline" target="_blank" rel="noopener noreferrer">vercel.com</a>.
-        </p>
-        <p className="text-muted-foreground">
           Le nom de domaine <strong>expatboost.com</strong> est enregistré auprès de <strong>Namecheap Inc.</strong>, 4600 East Washington Street, Suite 305, Phoenix, AZ 85034, États-Unis — <a href="https://www.namecheap.com" className="text-primary underline-offset-2 hover:underline" target="_blank" rel="noopener noreferrer">namecheap.com</a>.
         </p>
       </section>
