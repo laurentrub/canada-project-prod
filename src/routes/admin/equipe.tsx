@@ -8,6 +8,7 @@ type Member = {
   user_id: string;
   role: string;
   created_at: string;
+  email: string | null;
 };
 
 export const Route = createFileRoute("/admin/equipe")({
@@ -28,8 +29,13 @@ function AdminEquipe() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fetchMembers = async () => {
-    const { data } = await supabase.from("team_members").select("*").order("created_at");
-    setMembers(data ?? []);
+    try {
+      const res = await fetch("/api/list-members");
+      const data = await res.json();
+      setMembers(res.ok ? data.members ?? [] : []);
+    } catch {
+      setMembers([]);
+    }
     setLoading(false);
   };
 
@@ -173,7 +179,7 @@ function AdminEquipe() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-secondary/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
-                <th className="px-4 py-3">User ID</th>
+                <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Rôle</th>
                 <th className="px-4 py-3">Ajouté le</th>
                 <th className="px-4 py-3"></th>
@@ -182,10 +188,10 @@ function AdminEquipe() {
             <tbody className="divide-y divide-border">
               {members.map((m) => (
                 <tr key={m.id} className="hover:bg-secondary/30">
-                  <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
-                    {m.user_id}
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {m.email ?? <span className="italic">inconnu</span>}
                     {m.user_id === currentUserId && (
-                      <span className="ml-2 text-[10px] font-sans uppercase text-muted-foreground/70">(vous)</span>
+                      <span className="ml-2 text-[10px] uppercase text-muted-foreground/70">(vous)</span>
                     )}
                   </td>
                   <td className="px-4 py-3">
