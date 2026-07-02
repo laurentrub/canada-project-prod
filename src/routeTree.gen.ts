@@ -16,7 +16,6 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ConsultationRouteImport } from './routes/consultation'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
 import { Route as CguRouteImport } from './routes/cgu'
-import { Route as AdminSetPasswordRouteImport } from './routes/admin-set-password'
 import { Route as AdminLoginRouteImport } from './routes/admin-login'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AProposRouteImport } from './routes/a-propos'
@@ -61,11 +60,6 @@ const ConfidentialiteRoute = ConfidentialiteRouteImport.update({
 const CguRoute = CguRouteImport.update({
   id: '/cgu',
   path: '/cgu',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminSetPasswordRoute = AdminSetPasswordRouteImport.update({
-  id: '/admin-set-password',
-  path: '/admin-set-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -124,7 +118,6 @@ export interface FileRoutesByFullPath {
   '/a-propos': typeof AProposRoute
   '/admin': typeof AdminRouteWithChildren
   '/admin-login': typeof AdminLoginRoute
-  '/admin-set-password': typeof AdminSetPasswordRoute
   '/cgu': typeof CguRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/consultation': typeof ConsultationRoute
@@ -143,7 +136,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
   '/admin-login': typeof AdminLoginRoute
-  '/admin-set-password': typeof AdminSetPasswordRoute
   '/cgu': typeof CguRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/consultation': typeof ConsultationRoute
@@ -164,7 +156,6 @@ export interface FileRoutesById {
   '/a-propos': typeof AProposRoute
   '/admin': typeof AdminRouteWithChildren
   '/admin-login': typeof AdminLoginRoute
-  '/admin-set-password': typeof AdminSetPasswordRoute
   '/cgu': typeof CguRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/consultation': typeof ConsultationRoute
@@ -186,7 +177,6 @@ export interface FileRouteTypes {
     | '/a-propos'
     | '/admin'
     | '/admin-login'
-    | '/admin-set-password'
     | '/cgu'
     | '/confidentialite'
     | '/consultation'
@@ -205,7 +195,6 @@ export interface FileRouteTypes {
     | '/'
     | '/a-propos'
     | '/admin-login'
-    | '/admin-set-password'
     | '/cgu'
     | '/confidentialite'
     | '/consultation'
@@ -225,7 +214,6 @@ export interface FileRouteTypes {
     | '/a-propos'
     | '/admin'
     | '/admin-login'
-    | '/admin-set-password'
     | '/cgu'
     | '/confidentialite'
     | '/consultation'
@@ -246,7 +234,6 @@ export interface RootRouteChildren {
   AProposRoute: typeof AProposRoute
   AdminRoute: typeof AdminRouteWithChildren
   AdminLoginRoute: typeof AdminLoginRoute
-  AdminSetPasswordRoute: typeof AdminSetPasswordRoute
   CguRoute: typeof CguRoute
   ConfidentialiteRoute: typeof ConfidentialiteRoute
   ConsultationRoute: typeof ConsultationRoute
@@ -305,13 +292,6 @@ declare module '@tanstack/react-router' {
       path: '/cgu'
       fullPath: '/cgu'
       preLoaderRoute: typeof CguRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-set-password': {
-      id: '/admin-set-password'
-      path: '/admin-set-password'
-      fullPath: '/admin-set-password'
-      preLoaderRoute: typeof AdminSetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-login': {
@@ -412,7 +392,6 @@ const rootRouteChildren: RootRouteChildren = {
   AProposRoute: AProposRoute,
   AdminRoute: AdminRouteWithChildren,
   AdminLoginRoute: AdminLoginRoute,
-  AdminSetPasswordRoute: AdminSetPasswordRoute,
   CguRoute: CguRoute,
   ConfidentialiteRoute: ConfidentialiteRoute,
   ConsultationRoute: ConsultationRoute,

@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { Trash2 } from "lucide-react";
 
 type Member = {
   id: string;
   user_id: string;
   role: string;
   created_at: string;
-  email?: string;
 };
 
 export const Route = createFileRoute("/admin/equipe")({
@@ -17,10 +17,15 @@ export const Route = createFileRoute("/admin/equipe")({
 function AdminEquipe() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState<"admin" | "member">("member");
-  const [inviting, setInviting] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  const [newEmail, setNewEmail] = useState("");
+  const [newRole, setNewRole] = useState<"admin" | "member">("member");
+  const [creating, setCreating] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fetchMembers = async () => {
     const { data } = await supabase.from("team_members").select("*").order("created_at");
@@ -28,34 +33,90 @@ function AdminEquipe() {
     setLoading(false);
   };
 
-  const invite = async (e: React.FormEvent) => {
+  useEffect(() => {
+    fetchMembers();
+    supabase.auth.getSession().then(({ data }) => {
+      setCurrentUserId(data.session?.user.id ?? null);
+    });
+  }, []);
+
+  const createMember = async (e: React.FormEvent) => {
     e.preventDefault();
-    setInviting(true);
+    setCreating(true);
     setMessage(null);
 
     try {
-      const res = await fetch("/api/invite-member", {
+      const res = await fetch("/api/create-member", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: inviteEmail, role: inviteRole }),
+        body: JSON.stringify({ email: newEmail, role: newRole }),
       });
       const data = await res.json();
 
       if (!res.ok) {
-        setMessage({ type: "error", text: data.error ?? "Échec de l'invitation" });
+        setMessage({ type: "error", text: data.error ?? "Échec de la création du membre" });
       } else {
-        setMessage({ type: "success", text: `Invitation envoyée à ${inviteEmail}.` });
-        setInviteEmail("");
+        setMessage({ type: "success", text: `Membre créé, identifiants envoyés à ${newEmail}.` });
+        setNewEmail("");
+        setNewRole("member");
         fetchMembers();
       }
     } catch {
-      setMessage({ type: "error", text: "Échec de l'invitation" });
+      setMessage({ type: "error", text: "Échec de la création du membre" });
     }
 
-    setInviting(false);
+    setCreating(false);
   };
 
-  useEffect(() => { fetchMembers(); }, []);
+  const updateRole = async (userId: string, role: "admin" | "member") => {
+    setUpdatingId(userId);
+    setMessage(null);
+
+    try {
+      const res = await fetch("/api/update-member-role", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId, role }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessage({ type: "error", text: data.error ?? "Échec de la mise à jour du rôle" });
+      } else {
+        fetchMembers();
+      }
+    } catch {
+      setMessage({ type: "error", text: "Échec de la mise à jour du rôle" });
+    }
+
+    setUpdatingId(null);
+  };
+
+  const deleteMember = async (userId: string) => {
+    if (!confirm("Supprimer ce membre ? Il perdra définitivement l'accès à l'espace admin.")) return;
+
+    setDeletingId(userId);
+    setMessage(null);
+
+    try {
+      const res = await fetch("/api/delete-member", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessage({ type: "error", text: data.error ?? "Échec de la suppression" });
+      } else {
+        fetchMembers();
+      }
+    } catch {
+      setMessage({ type: "error", text: "Échec de la suppression" });
+    }
+
+    setDeletingId(null);
+  };
 
   return (
     <div className="p-6 md:p-8">
@@ -64,21 +125,21 @@ function AdminEquipe() {
         <p className="mt-1 text-sm text-muted-foreground">Gérez les membres de l'espace admin.</p>
       </div>
 
-      {/* Invite form */}
+      {/* Create form */}
       <div className="mb-8 rounded-xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
-        <h2 className="font-semibold mb-4">Inviter un membre</h2>
-        <form onSubmit={invite} className="flex flex-wrap gap-3">
+        <h2 className="font-semibold mb-4">Créer un membre</h2>
+        <form onSubmit={createMember} className="flex flex-wrap gap-3">
           <input
             type="email"
             required
             placeholder="Email"
-            value={inviteEmail}
-            onChange={(e) => setInviteEmail(e.target.value)}
+            value={newEmail}
+            onChange={(e) => setNewEmail(e.target.value)}
             className="flex-1 min-w-[200px] rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
           <select
-            value={inviteRole}
-            onChange={(e) => setInviteRole(e.target.value as "admin" | "member")}
+            value={newRole}
+            onChange={(e) => setNewRole(e.target.value as "admin" | "member")}
             className="rounded-lg border border-input bg-background px-3 py-2 text-sm"
           >
             <option value="member">Membre</option>
@@ -86,10 +147,10 @@ function AdminEquipe() {
           </select>
           <button
             type="submit"
-            disabled={inviting}
+            disabled={creating}
             className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50"
           >
-            {inviting ? "Envoi…" : "Inviter"}
+            {creating ? "Création…" : "Créer"}
           </button>
         </form>
         {message && (
@@ -98,7 +159,7 @@ function AdminEquipe() {
           </p>
         )}
         <p className="mt-2 text-xs text-muted-foreground">
-          L'invitation est envoyée par email. Le membre devra définir son mot de passe au premier accès.
+          Un mot de passe est généré automatiquement et envoyé par email au membre, qui peut se connecter immédiatement.
         </p>
       </div>
 
@@ -115,19 +176,41 @@ function AdminEquipe() {
                 <th className="px-4 py-3">User ID</th>
                 <th className="px-4 py-3">Rôle</th>
                 <th className="px-4 py-3">Ajouté le</th>
+                <th className="px-4 py-3"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {members.map((m) => (
                 <tr key={m.id} className="hover:bg-secondary/30">
-                  <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{m.user_id}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
+                    {m.user_id}
+                    {m.user_id === currentUserId && (
+                      <span className="ml-2 text-[10px] font-sans uppercase text-muted-foreground/70">(vous)</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3">
-                    <span className={`rounded-full px-2 py-1 text-xs font-semibold ${m.role === "admin" ? "bg-primary/10 text-primary" : "bg-secondary text-muted-foreground"}`}>
-                      {m.role === "admin" ? "Admin" : "Membre"}
-                    </span>
+                    <select
+                      value={m.role}
+                      disabled={updatingId === m.user_id || m.user_id === currentUserId}
+                      onChange={(e) => updateRole(m.user_id, e.target.value as "admin" | "member")}
+                      className={`rounded-full border-0 px-2 py-1 text-xs font-semibold disabled:opacity-60 ${m.role === "admin" ? "bg-primary/10 text-primary" : "bg-secondary text-muted-foreground"}`}
+                    >
+                      <option value="member">Membre</option>
+                      <option value="admin">Admin</option>
+                    </select>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {new Date(m.created_at).toLocaleDateString("fr-CA")}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() => deleteMember(m.user_id)}
+                      disabled={deletingId === m.user_id || m.user_id === currentUserId}
+                      title={m.user_id === currentUserId ? "Vous ne pouvez pas supprimer votre propre compte" : "Supprimer"}
+                      className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-muted-foreground"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </td>
                 </tr>
               ))}
