@@ -33,13 +33,23 @@ function AdminEquipe() {
     setInviting(true);
     setMessage(null);
 
-    const { error } = await supabase.auth.admin.inviteUserByEmail(inviteEmail);
+    try {
+      const res = await fetch("/api/invite-member", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: inviteEmail, role: inviteRole }),
+      });
+      const data = await res.json();
 
-    if (error) {
-      setMessage({ type: "error", text: error.message });
-    } else {
-      setMessage({ type: "success", text: `Invitation envoyée à ${inviteEmail}.` });
-      setInviteEmail("");
+      if (!res.ok) {
+        setMessage({ type: "error", text: data.error ?? "Échec de l'invitation" });
+      } else {
+        setMessage({ type: "success", text: `Invitation envoyée à ${inviteEmail}.` });
+        setInviteEmail("");
+        fetchMembers();
+      }
+    } catch {
+      setMessage({ type: "error", text: "Échec de l'invitation" });
     }
 
     setInviting(false);
