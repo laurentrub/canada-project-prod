@@ -10,15 +10,31 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProgrammesRouteImport } from './routes/programmes'
+import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as EvaluationRouteImport } from './routes/evaluation'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ConsultationRouteImport } from './routes/consultation'
+import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
+import { Route as CguRouteImport } from './routes/cgu'
+import { Route as AdminLoginRouteImport } from './routes/admin-login'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AProposRouteImport } from './routes/a-propos'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminPaiementRouteImport } from './routes/admin/paiement'
+import { Route as AdminEvaluationsRouteImport } from './routes/admin/evaluations'
+import { Route as AdminEquipeRouteImport } from './routes/admin/equipe'
+import { Route as AdminContactsRouteImport } from './routes/admin/contacts'
+import { Route as AdminConsultationsRouteImport } from './routes/admin/consultations'
 
 const ProgrammesRoute = ProgrammesRouteImport.update({
   id: '/programmes',
   path: '/programmes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
+  id: '/mentions-legales',
+  path: '/mentions-legales',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EvaluationRoute = EvaluationRouteImport.update({
@@ -36,6 +52,26 @@ const ConsultationRoute = ConsultationRouteImport.update({
   path: '/consultation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConfidentialiteRoute = ConfidentialiteRouteImport.update({
+  id: '/confidentialite',
+  path: '/confidentialite',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CguRoute = CguRouteImport.update({
+  id: '/cgu',
+  path: '/cgu',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin-login',
+  path: '/admin-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AProposRoute = AProposRouteImport.update({
   id: '/a-propos',
   path: '/a-propos',
@@ -46,65 +82,164 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPaiementRoute = AdminPaiementRouteImport.update({
+  id: '/paiement',
+  path: '/paiement',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEvaluationsRoute = AdminEvaluationsRouteImport.update({
+  id: '/evaluations',
+  path: '/evaluations',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEquipeRoute = AdminEquipeRouteImport.update({
+  id: '/equipe',
+  path: '/equipe',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminContactsRoute = AdminContactsRouteImport.update({
+  id: '/contacts',
+  path: '/contacts',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminConsultationsRoute = AdminConsultationsRouteImport.update({
+  id: '/consultations',
+  path: '/consultations',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/admin-login': typeof AdminLoginRoute
+  '/cgu': typeof CguRoute
+  '/confidentialite': typeof ConfidentialiteRoute
   '/consultation': typeof ConsultationRoute
   '/contact': typeof ContactRoute
   '/evaluation': typeof EvaluationRoute
+  '/mentions-legales': typeof MentionsLegalesRoute
   '/programmes': typeof ProgrammesRoute
+  '/admin/consultations': typeof AdminConsultationsRoute
+  '/admin/contacts': typeof AdminContactsRoute
+  '/admin/equipe': typeof AdminEquipeRoute
+  '/admin/evaluations': typeof AdminEvaluationsRoute
+  '/admin/paiement': typeof AdminPaiementRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
+  '/admin-login': typeof AdminLoginRoute
+  '/cgu': typeof CguRoute
+  '/confidentialite': typeof ConfidentialiteRoute
   '/consultation': typeof ConsultationRoute
   '/contact': typeof ContactRoute
   '/evaluation': typeof EvaluationRoute
+  '/mentions-legales': typeof MentionsLegalesRoute
   '/programmes': typeof ProgrammesRoute
+  '/admin/consultations': typeof AdminConsultationsRoute
+  '/admin/contacts': typeof AdminContactsRoute
+  '/admin/equipe': typeof AdminEquipeRoute
+  '/admin/evaluations': typeof AdminEvaluationsRoute
+  '/admin/paiement': typeof AdminPaiementRoute
+  '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/admin-login': typeof AdminLoginRoute
+  '/cgu': typeof CguRoute
+  '/confidentialite': typeof ConfidentialiteRoute
   '/consultation': typeof ConsultationRoute
   '/contact': typeof ContactRoute
   '/evaluation': typeof EvaluationRoute
+  '/mentions-legales': typeof MentionsLegalesRoute
   '/programmes': typeof ProgrammesRoute
+  '/admin/consultations': typeof AdminConsultationsRoute
+  '/admin/contacts': typeof AdminContactsRoute
+  '/admin/equipe': typeof AdminEquipeRoute
+  '/admin/evaluations': typeof AdminEvaluationsRoute
+  '/admin/paiement': typeof AdminPaiementRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/a-propos'
+    | '/admin'
+    | '/admin-login'
+    | '/cgu'
+    | '/confidentialite'
     | '/consultation'
     | '/contact'
     | '/evaluation'
+    | '/mentions-legales'
     | '/programmes'
+    | '/admin/consultations'
+    | '/admin/contacts'
+    | '/admin/equipe'
+    | '/admin/evaluations'
+    | '/admin/paiement'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/a-propos'
+    | '/admin-login'
+    | '/cgu'
+    | '/confidentialite'
     | '/consultation'
     | '/contact'
     | '/evaluation'
+    | '/mentions-legales'
     | '/programmes'
+    | '/admin/consultations'
+    | '/admin/contacts'
+    | '/admin/equipe'
+    | '/admin/evaluations'
+    | '/admin/paiement'
+    | '/admin'
   id:
     | '__root__'
     | '/'
     | '/a-propos'
+    | '/admin'
+    | '/admin-login'
+    | '/cgu'
+    | '/confidentialite'
     | '/consultation'
     | '/contact'
     | '/evaluation'
+    | '/mentions-legales'
     | '/programmes'
+    | '/admin/consultations'
+    | '/admin/contacts'
+    | '/admin/equipe'
+    | '/admin/evaluations'
+    | '/admin/paiement'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AProposRoute: typeof AProposRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  AdminLoginRoute: typeof AdminLoginRoute
+  CguRoute: typeof CguRoute
+  ConfidentialiteRoute: typeof ConfidentialiteRoute
   ConsultationRoute: typeof ConsultationRoute
   ContactRoute: typeof ContactRoute
   EvaluationRoute: typeof EvaluationRoute
+  MentionsLegalesRoute: typeof MentionsLegalesRoute
   ProgrammesRoute: typeof ProgrammesRoute
 }
 
@@ -115,6 +250,13 @@ declare module '@tanstack/react-router' {
       path: '/programmes'
       fullPath: '/programmes'
       preLoaderRoute: typeof ProgrammesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mentions-legales': {
+      id: '/mentions-legales'
+      path: '/mentions-legales'
+      fullPath: '/mentions-legales'
+      preLoaderRoute: typeof MentionsLegalesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/evaluation': {
@@ -138,6 +280,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsultationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/confidentialite': {
+      id: '/confidentialite'
+      path: '/confidentialite'
+      fullPath: '/confidentialite'
+      preLoaderRoute: typeof ConfidentialiteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cgu': {
+      id: '/cgu'
+      path: '/cgu'
+      fullPath: '/cgu'
+      preLoaderRoute: typeof CguRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-login': {
+      id: '/admin-login'
+      path: '/admin-login'
+      fullPath: '/admin-login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/a-propos': {
       id: '/a-propos'
       path: '/a-propos'
@@ -152,15 +322,82 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/paiement': {
+      id: '/admin/paiement'
+      path: '/paiement'
+      fullPath: '/admin/paiement'
+      preLoaderRoute: typeof AdminPaiementRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/evaluations': {
+      id: '/admin/evaluations'
+      path: '/evaluations'
+      fullPath: '/admin/evaluations'
+      preLoaderRoute: typeof AdminEvaluationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/equipe': {
+      id: '/admin/equipe'
+      path: '/equipe'
+      fullPath: '/admin/equipe'
+      preLoaderRoute: typeof AdminEquipeRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/contacts': {
+      id: '/admin/contacts'
+      path: '/contacts'
+      fullPath: '/admin/contacts'
+      preLoaderRoute: typeof AdminContactsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/consultations': {
+      id: '/admin/consultations'
+      path: '/consultations'
+      fullPath: '/admin/consultations'
+      preLoaderRoute: typeof AdminConsultationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
+
+interface AdminRouteChildren {
+  AdminConsultationsRoute: typeof AdminConsultationsRoute
+  AdminContactsRoute: typeof AdminContactsRoute
+  AdminEquipeRoute: typeof AdminEquipeRoute
+  AdminEvaluationsRoute: typeof AdminEvaluationsRoute
+  AdminPaiementRoute: typeof AdminPaiementRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminConsultationsRoute: AdminConsultationsRoute,
+  AdminContactsRoute: AdminContactsRoute,
+  AdminEquipeRoute: AdminEquipeRoute,
+  AdminEvaluationsRoute: AdminEvaluationsRoute,
+  AdminPaiementRoute: AdminPaiementRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AProposRoute: AProposRoute,
+  AdminRoute: AdminRouteWithChildren,
+  AdminLoginRoute: AdminLoginRoute,
+  CguRoute: CguRoute,
+  ConfidentialiteRoute: ConfidentialiteRoute,
   ConsultationRoute: ConsultationRoute,
   ContactRoute: ContactRoute,
   EvaluationRoute: EvaluationRoute,
+  MentionsLegalesRoute: MentionsLegalesRoute,
   ProgrammesRoute: ProgrammesRoute,
 }
 export const routeTree = rootRouteImport

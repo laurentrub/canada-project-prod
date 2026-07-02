@@ -27,14 +27,21 @@ function MentionsLegales() {
       </section>
 
       <section className="mt-8 space-y-3">
-        <h2 className="text-lg font-semibold">2. Hébergement</h2>
+        <h2 className="text-lg font-semibold">2. Directeur de la publication</h2>
         <p className="text-muted-foreground">
-          Le site est hébergé par <strong>Vercel Inc.</strong>, 340 Pine Street, Suite 701, San Francisco, CA 94104, États-Unis — <a href="https://vercel.com" className="text-primary underline-offset-2 hover:underline" target="_blank" rel="noopener noreferrer">vercel.com</a>.
+          Le directeur de la publication est <strong>Laurent Trubert</strong>.
         </p>
       </section>
 
       <section className="mt-8 space-y-3">
-        <h2 className="text-lg font-semibold">3. Activité et cadre réglementaire</h2>
+        <h2 className="text-lg font-semibold">3. Hébergement</h2>
+        <p className="text-muted-foreground">
+          Le nom de domaine <strong>expatboost.com</strong> est enregistré auprès de <strong>Namecheap Inc.</strong>, 4600 East Washington Street, Suite 305, Phoenix, AZ 85034, États-Unis — <a href="https://www.namecheap.com" className="text-primary underline-offset-2 hover:underline" target="_blank" rel="noopener noreferrer">namecheap.com</a>.
+        </p>
+      </section>
+
+      <section className="mt-8 space-y-3">
+        <h2 className="text-lg font-semibold">4. Activité et cadre réglementaire</h2>
         <p className="text-muted-foreground">
           Expat Boost propose des services de conseil et d'accompagnement en matière d'immigration canadienne : évaluation de profil, orientation vers les programmes d'immigration fédéraux et provinciaux, préparation de dossiers et suivi des démarches.
         </p>
@@ -47,21 +54,21 @@ function MentionsLegales() {
       </section>
 
       <section className="mt-8 space-y-3">
-        <h2 className="text-lg font-semibold">4. Propriété intellectuelle</h2>
+        <h2 className="text-lg font-semibold">5. Propriété intellectuelle</h2>
         <p className="text-muted-foreground">
           L'ensemble des contenus présents sur ce site (textes, graphiques, logo, structure) est la propriété exclusive d'Expat Boost et est protégé par le droit d'auteur. Toute reproduction, représentation ou diffusion, totale ou partielle, sans autorisation écrite préalable est strictement interdite.
         </p>
       </section>
 
       <section className="mt-8 space-y-3">
-        <h2 className="text-lg font-semibold">5. Limitation de responsabilité</h2>
+        <h2 className="text-lg font-semibold">6. Limitation de responsabilité</h2>
         <p className="text-muted-foreground">
           Les informations publiées sur ce site ont un caractère général et indicatif. La réglementation en matière d'immigration évolue fréquemment ; Expat Boost s'efforce de maintenir les informations à jour mais ne saurait garantir l'exactitude, l'exhaustivité ou l'actualité de l'ensemble des contenus. Expat Boost décline toute responsabilité quant aux décisions prises par les utilisateurs sur la base des informations disponibles sur le site.
         </p>
       </section>
 
       <section className="mt-8 space-y-3">
-        <h2 className="text-lg font-semibold">6. Droit applicable</h2>
+        <h2 className="text-lg font-semibold">7. Droit applicable</h2>
         <p className="text-muted-foreground">
           Les présentes mentions légales sont régies par le droit français. Tout litige relatif à l'utilisation du site sera soumis à la compétence des tribunaux compétents.
         </p>
