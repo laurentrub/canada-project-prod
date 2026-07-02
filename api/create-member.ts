@@ -16,8 +16,9 @@ function generatePassword() {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") return res.status(405).end();
 
-  const { email, role } = req.body ?? {};
+  const { email, role, first_name, last_name } = req.body ?? {};
   if (!email) return res.status(400).json({ error: "email requis" });
+  if (!first_name || !last_name) return res.status(400).json({ error: "nom et prénom requis" });
   if (role && role !== "admin" && role !== "member") {
     return res.status(400).json({ error: "role invalide" });
   }
@@ -37,7 +38,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const { error: insertError } = await supabase
     .from("team_members")
-    .insert({ user_id: data.user.id, role: role ?? "member" });
+    .insert({ user_id: data.user.id, role: role ?? "member", first_name, last_name });
 
   if (insertError) {
     console.error("team_members insert error:", insertError);
@@ -52,7 +53,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     html: `
       <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#111">
         <h1 style="font-size:22px;font-weight:bold">Bienvenue sur l'espace admin</h1>
-        <p>Bonjour,</p>
+        <p>Bonjour ${first_name},</p>
         <p>Un compte a été créé pour vous sur l'espace admin d'Expat Boost. Voici vos identifiants de connexion :</p>
         <div style="background:#f3f4f6;border-radius:8px;padding:20px;margin:24px 0">
           <table style="border-collapse:collapse;width:100%">

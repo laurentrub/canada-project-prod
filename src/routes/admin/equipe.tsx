@@ -9,6 +9,8 @@ type Member = {
   role: string;
   created_at: string;
   email: string | null;
+  first_name: string | null;
+  last_name: string | null;
 };
 
 export const Route = createFileRoute("/admin/equipe")({
@@ -20,6 +22,8 @@ function AdminEquipe() {
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
+  const [newFirstName, setNewFirstName] = useState("");
+  const [newLastName, setNewLastName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newRole, setNewRole] = useState<"admin" | "member">("member");
   const [creating, setCreating] = useState(false);
@@ -55,7 +59,12 @@ function AdminEquipe() {
       const res = await fetch("/api/create-member", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: newEmail, role: newRole }),
+        body: JSON.stringify({
+          email: newEmail,
+          role: newRole,
+          first_name: newFirstName,
+          last_name: newLastName,
+        }),
       });
       const data = await res.json();
 
@@ -63,6 +72,8 @@ function AdminEquipe() {
         setMessage({ type: "error", text: data.error ?? "Échec de la création du membre" });
       } else {
         setMessage({ type: "success", text: `Membre créé, identifiants envoyés à ${newEmail}.` });
+        setNewFirstName("");
+        setNewLastName("");
         setNewEmail("");
         setNewRole("member");
         fetchMembers();
@@ -136,6 +147,22 @@ function AdminEquipe() {
         <h2 className="font-semibold mb-4">Créer un membre</h2>
         <form onSubmit={createMember} className="flex flex-wrap gap-3">
           <input
+            type="text"
+            required
+            placeholder="Prénom"
+            value={newFirstName}
+            onChange={(e) => setNewFirstName(e.target.value)}
+            className="min-w-[140px] flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          />
+          <input
+            type="text"
+            required
+            placeholder="Nom"
+            value={newLastName}
+            onChange={(e) => setNewLastName(e.target.value)}
+            className="min-w-[140px] flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          />
+          <input
             type="email"
             required
             placeholder="Email"
@@ -179,6 +206,7 @@ function AdminEquipe() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-secondary/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
+                <th className="px-4 py-3">Nom</th>
                 <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Rôle</th>
                 <th className="px-4 py-3">Ajouté le</th>
@@ -188,11 +216,16 @@ function AdminEquipe() {
             <tbody className="divide-y divide-border">
               {members.map((m) => (
                 <tr key={m.id} className="hover:bg-secondary/30">
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {m.email ?? <span className="italic">inconnu</span>}
+                  <td className="px-4 py-3">
+                    <span className="font-medium">
+                      {m.first_name || m.last_name ? `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim() : <span className="italic text-muted-foreground">inconnu</span>}
+                    </span>
                     {m.user_id === currentUserId && (
                       <span className="ml-2 text-[10px] uppercase text-muted-foreground/70">(vous)</span>
                     )}
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {m.email ?? <span className="italic">inconnu</span>}
                   </td>
                   <td className="px-4 py-3">
                     <select
