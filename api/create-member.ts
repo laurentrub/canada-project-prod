@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
 import crypto from "node:crypto";
+import { requireAdmin } from "./_lib/auth";
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL!,
@@ -15,6 +16,9 @@ function generatePassword() {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") return res.status(405).end();
+
+  const admin = await requireAdmin(req);
+  if (!admin) return res.status(403).json({ error: "Accès réservé aux administrateurs" });
 
   const { email, role, first_name, last_name } = req.body ?? {};
   if (!email) return res.status(400).json({ error: "email requis" });

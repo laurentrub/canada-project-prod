@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { authFetch } from "@/lib/auth-fetch";
 import { Trash2, Pencil, Check, X } from "lucide-react";
 
 type Member = {
@@ -38,7 +39,7 @@ function AdminEquipe() {
 
   const fetchMembers = async () => {
     try {
-      const res = await fetch("/api/list-members");
+      const res = await authFetch("/api/list-members");
       const data = await res.json();
       setMembers(res.ok ? data.members ?? [] : []);
     } catch {
@@ -60,7 +61,7 @@ function AdminEquipe() {
     setMessage(null);
 
     try {
-      const res = await fetch("/api/create-member", {
+      const res = await authFetch("/api/create-member", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -97,7 +98,7 @@ function AdminEquipe() {
     setMessage(null);
 
     try {
-      const res = await fetch("/api/update-member", {
+      const res = await authFetch("/api/update-member", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId, ...fields }),
@@ -144,7 +145,7 @@ function AdminEquipe() {
     setMessage(null);
 
     try {
-      const res = await fetch("/api/delete-member", {
+      const res = await authFetch("/api/delete-member", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId }),

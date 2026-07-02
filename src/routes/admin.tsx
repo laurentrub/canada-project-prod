@@ -3,24 +3,28 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 import { LayoutDashboard, ClipboardList, CalendarCheck, Users, LogOut, Wallet } from "lucide-react";
+import { useCurrentRole } from "@/hooks/use-current-role";
 
 export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
 const nav = [
-  { to: "/admin/evaluations", label: "Évaluations", icon: ClipboardList },
-  { to: "/admin/contacts", label: "Contacts", icon: LayoutDashboard },
-  { to: "/admin/consultations", label: "Consultations", icon: CalendarCheck },
-  { to: "/admin/equipe", label: "Équipe", icon: Users },
-  { to: "/admin/paiement", label: "Paiement", icon: Wallet },
+  { to: "/admin/evaluations", label: "Évaluations", icon: ClipboardList, adminOnly: false },
+  { to: "/admin/contacts", label: "Contacts", icon: LayoutDashboard, adminOnly: false },
+  { to: "/admin/consultations", label: "Consultations", icon: CalendarCheck, adminOnly: false },
+  { to: "/admin/equipe", label: "Équipe", icon: Users, adminOnly: true },
+  { to: "/admin/paiement", label: "Paiement", icon: Wallet, adminOnly: true },
 ];
+
+const adminOnlyPaths = nav.filter((n) => n.adminOnly).map((n) => n.to);
 
 function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState<User | null>(null);
   const [checking, setChecking] = useState(true);
+  const { isAdmin, loading: roleLoading } = useCurrentRole();
 
   useEffect(() => {
     let mounted = true;
@@ -46,12 +50,19 @@ function AdminLayout() {
     };
   }, []);
 
+  useEffect(() => {
+    if (roleLoading || isAdmin) return;
+    if (adminOnlyPaths.some((path) => location.pathname.startsWith(path))) {
+      navigate({ to: "/admin/evaluations" });
+    }
+  }, [roleLoading, isAdmin, location.pathname, navigate]);
+
   const signOut = async () => {
     await supabase.auth.signOut();
     navigate({ to: "/admin-login" });
   };
 
-  if (checking) {
+  if (checking || roleLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <p className="text-sm text-muted-foreground">Chargement…</p>
@@ -69,7 +80,7 @@ function AdminLayout() {
         </div>
 
         <nav className="flex-1 space-y-1 p-3">
-          {nav.map(({ to, label, icon: Icon }) => {
+          {nav.filter((n) => !n.adminOnly || isAdmin).map(({ to, label, icon: Icon }) => {
             const active = location.pathname.startsWith(to);
             return (
               <Link

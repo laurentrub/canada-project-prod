@@ -13,21 +13,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const admin = await requireAdmin(req);
   if (!admin) return res.status(403).json({ error: "Accès réservé aux administrateurs" });
 
-  const { user_id, role, first_name, last_name } = req.body ?? {};
-  if (!user_id) return res.status(400).json({ error: "user_id requis" });
-  if (role !== undefined && role !== "admin" && role !== "member") {
-    return res.status(400).json({ error: "role invalide" });
-  }
-  if (!first_name || !last_name) return res.status(400).json({ error: "nom et prénom requis" });
+  const { network, phone, recipient, amount, currency, instructions } = req.body ?? {};
+  if (!network || !phone) return res.status(400).json({ error: "réseau et numéro requis" });
 
   const { error } = await supabase
-    .from("team_members")
-    .update({ role, first_name, last_name })
-    .eq("user_id", user_id);
+    .from("payment_settings")
+    .update({
+      network,
+      phone,
+      recipient,
+      amount,
+      currency,
+      instructions,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", 1);
 
   if (error) {
-    console.error("Update member error:", error);
-    return res.status(500).json({ error: "Échec de la mise à jour du membre" });
+    console.error("Save payment settings error:", error);
+    return res.status(500).json({ error: "Échec de l'enregistrement" });
   }
 
   return res.status(200).json({ ok: true });

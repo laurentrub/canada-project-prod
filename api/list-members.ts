@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
+import { requireAuth } from "./_lib/auth";
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL!,
@@ -8,6 +9,9 @@ const supabase = createClient(
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET") return res.status(405).end();
+
+  const auth = await requireAuth(req);
+  if (!auth) return res.status(401).json({ error: "Authentification requise" });
 
   const { data: members, error } = await supabase
     .from("team_members")

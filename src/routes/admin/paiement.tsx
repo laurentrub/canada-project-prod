@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { authFetch } from "@/lib/auth-fetch";
 import { Save, CheckCircle2 } from "lucide-react";
 
 type PaymentSettings = {
@@ -52,13 +53,16 @@ function AdminPaiement() {
 
   const save = async () => {
     setSaving(true);
-    await supabase
-      .from("payment_settings")
-      .update({ ...form, updated_at: new Date().toISOString() })
-      .eq("id", 1);
+    const res = await authFetch("/api/save-payment-settings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
     setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    if (res.ok) {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    }
   };
 
   if (loading) {
