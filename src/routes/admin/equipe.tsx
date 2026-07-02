@@ -145,46 +145,50 @@ function AdminEquipe() {
       {/* Create form */}
       <div className="mb-8 rounded-xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
         <h2 className="font-semibold mb-4">Créer un membre</h2>
-        <form onSubmit={createMember} className="flex flex-wrap gap-3">
-          <input
-            type="text"
-            required
-            placeholder="Prénom"
-            value={newFirstName}
-            onChange={(e) => setNewFirstName(e.target.value)}
-            className="min-w-[140px] flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-          />
-          <input
-            type="text"
-            required
-            placeholder="Nom"
-            value={newLastName}
-            onChange={(e) => setNewLastName(e.target.value)}
-            className="min-w-[140px] flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-          />
-          <input
-            type="email"
-            required
-            placeholder="Email"
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-            className="flex-1 min-w-[200px] rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-          />
-          <select
-            value={newRole}
-            onChange={(e) => setNewRole(e.target.value as "admin" | "member")}
-            className="rounded-lg border border-input bg-background px-3 py-2 text-sm"
-          >
-            <option value="member">Membre</option>
-            <option value="admin">Admin</option>
-          </select>
-          <button
-            type="submit"
-            disabled={creating}
-            className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50"
-          >
-            {creating ? "Création…" : "Créer"}
-          </button>
+        <form onSubmit={createMember} className="space-y-3">
+          <div className="flex flex-wrap gap-3">
+            <input
+              type="text"
+              required
+              placeholder="Prénom"
+              value={newFirstName}
+              onChange={(e) => setNewFirstName(e.target.value)}
+              className="min-w-[140px] flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            />
+            <input
+              type="text"
+              required
+              placeholder="Nom"
+              value={newLastName}
+              onChange={(e) => setNewLastName(e.target.value)}
+              className="min-w-[140px] flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            />
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <input
+              type="email"
+              required
+              placeholder="Email"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              className="flex-1 min-w-[200px] rounded-lg border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            />
+            <select
+              value={newRole}
+              onChange={(e) => setNewRole(e.target.value as "admin" | "member")}
+              className="rounded-lg border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="member">Membre</option>
+              <option value="admin">Admin</option>
+            </select>
+            <button
+              type="submit"
+              disabled={creating}
+              className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50"
+            >
+              {creating ? "Création…" : "Créer"}
+            </button>
+          </div>
         </form>
         {message && (
           <p className={`mt-3 text-sm ${message.type === "success" ? "text-green-600" : "text-destructive"}`}>
