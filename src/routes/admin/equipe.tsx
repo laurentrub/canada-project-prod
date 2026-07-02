@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Trash2 } from "lucide-react";
+import { Trash2, Pencil, Check, X } from "lucide-react";
 
 type Member = {
   id: string;
@@ -31,6 +31,10 @@ function AdminEquipe() {
 
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editFirstName, setEditFirstName] = useState("");
+  const [editLastName, setEditLastName] = useState("");
 
   const fetchMembers = async () => {
     try {
@@ -85,28 +89,52 @@ function AdminEquipe() {
     setCreating(false);
   };
 
-  const updateRole = async (userId: string, role: "admin" | "member") => {
+  const updateMember = async (
+    userId: string,
+    fields: { role?: "admin" | "member"; first_name?: string; last_name?: string }
+  ) => {
     setUpdatingId(userId);
     setMessage(null);
 
     try {
-      const res = await fetch("/api/update-member-role", {
+      const res = await fetch("/api/update-member", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId, role }),
+        body: JSON.stringify({ user_id: userId, ...fields }),
       });
       const data = await res.json();
 
       if (!res.ok) {
-        setMessage({ type: "error", text: data.error ?? "Échec de la mise à jour du rôle" });
+        setMessage({ type: "error", text: data.error ?? "Échec de la mise à jour du membre" });
       } else {
         fetchMembers();
       }
     } catch {
-      setMessage({ type: "error", text: "Échec de la mise à jour du rôle" });
+      setMessage({ type: "error", text: "Échec de la mise à jour du membre" });
     }
 
     setUpdatingId(null);
+  };
+
+  const startEdit = (m: Member) => {
+    setEditingId(m.user_id);
+    setEditFirstName(m.first_name ?? "");
+    setEditLastName(m.last_name ?? "");
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditFirstName("");
+    setEditLastName("");
+  };
+
+  const saveEdit = async (m: Member) => {
+    await updateMember(m.user_id, {
+      role: m.role as "admin" | "member",
+      first_name: editFirstName,
+      last_name: editLastName,
+    });
+    cancelEdit();
   };
 
   const deleteMember = async (userId: string) => {
@@ -220,41 +248,123 @@ function AdminEquipe() {
             <tbody className="divide-y divide-border">
               {members.map((m) => (
                 <tr key={m.id} className="hover:bg-secondary/30">
-                  <td className="px-4 py-3">
-                    <span className="font-medium">
-                      {m.first_name || m.last_name ? `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim() : <span className="italic text-muted-foreground">inconnu</span>}
-                    </span>
-                    {m.user_id === currentUserId && (
-                      <span className="ml-2 text-[10px] uppercase text-muted-foreground/70">(vous)</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {m.email ?? <span className="italic">inconnu</span>}
-                  </td>
-                  <td className="px-4 py-3">
-                    <select
-                      value={m.role}
-                      disabled={updatingId === m.user_id || m.user_id === currentUserId}
-                      onChange={(e) => updateRole(m.user_id, e.target.value as "admin" | "member")}
-                      className={`rounded-full border-0 px-2 py-1 text-xs font-semibold disabled:opacity-60 ${m.role === "admin" ? "bg-primary/10 text-primary" : "bg-secondary text-muted-foreground"}`}
-                    >
-                      <option value="member">Membre</option>
-                      <option value="admin">Admin</option>
-                    </select>
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {new Date(m.created_at).toLocaleDateString("fr-CA")}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <button
-                      onClick={() => deleteMember(m.user_id)}
-                      disabled={deletingId === m.user_id || m.user_id === currentUserId}
-                      title={m.user_id === currentUserId ? "Vous ne pouvez pas supprimer votre propre compte" : "Supprimer"}
-                      className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-muted-foreground"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </td>
+                  {editingId === m.user_id ? (
+                    <>
+                      <td className="px-4 py-3" colSpan={2}>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            required
+                            placeholder="Prénom"
+                            value={editFirstName}
+                            onChange={(e) => setEditFirstName(e.target.value)}
+                            className="min-w-0 flex-1 rounded-lg border border-input bg-background px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                          />
+                          <input
+                            type="text"
+                            required
+                            placeholder="Nom"
+                            value={editLastName}
+                            onChange={(e) => setEditLastName(e.target.value)}
+                            className="min-w-0 flex-1 rounded-lg border border-input bg-background px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                          />
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <select
+                          value={m.role}
+                          disabled={updatingId === m.user_id || m.user_id === currentUserId}
+                          onChange={(e) =>
+                            updateMember(m.user_id, {
+                              role: e.target.value as "admin" | "member",
+                              first_name: m.first_name ?? "",
+                              last_name: m.last_name ?? "",
+                            })
+                          }
+                          className={`rounded-full border-0 px-2 py-1 text-xs font-semibold disabled:opacity-60 ${m.role === "admin" ? "bg-primary/10 text-primary" : "bg-secondary text-muted-foreground"}`}
+                        >
+                          <option value="member">Membre</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {new Date(m.created_at).toLocaleDateString("fr-CA")}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex justify-end gap-1">
+                          <button
+                            onClick={() => saveEdit(m)}
+                            disabled={updatingId === m.user_id}
+                            title="Enregistrer"
+                            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary disabled:opacity-40"
+                          >
+                            <Check className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={cancelEdit}
+                            disabled={updatingId === m.user_id}
+                            title="Annuler"
+                            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-secondary disabled:opacity-40"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </>
+                  ) : (
+                    <>
+                      <td className="px-4 py-3">
+                        <span className="font-medium">
+                          {m.first_name || m.last_name ? `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim() : <span className="italic text-muted-foreground">inconnu</span>}
+                        </span>
+                        {m.user_id === currentUserId && (
+                          <span className="ml-2 text-[10px] uppercase text-muted-foreground/70">(vous)</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {m.email ?? <span className="italic">inconnu</span>}
+                      </td>
+                      <td className="px-4 py-3">
+                        <select
+                          value={m.role}
+                          disabled={updatingId === m.user_id || m.user_id === currentUserId}
+                          onChange={(e) =>
+                            updateMember(m.user_id, {
+                              role: e.target.value as "admin" | "member",
+                              first_name: m.first_name ?? "",
+                              last_name: m.last_name ?? "",
+                            })
+                          }
+                          className={`rounded-full border-0 px-2 py-1 text-xs font-semibold disabled:opacity-60 ${m.role === "admin" ? "bg-primary/10 text-primary" : "bg-secondary text-muted-foreground"}`}
+                        >
+                          <option value="member">Membre</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {new Date(m.created_at).toLocaleDateString("fr-CA")}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex justify-end gap-1">
+                          <button
+                            onClick={() => startEdit(m)}
+                            title="Modifier"
+                            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => deleteMember(m.user_id)}
+                            disabled={deletingId === m.user_id || m.user_id === currentUserId}
+                            title={m.user_id === currentUserId ? "Vous ne pouvez pas supprimer votre propre compte" : "Supprimer"}
+                            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-muted-foreground"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </>
+                  )}
                 </tr>
               ))}
             </tbody>

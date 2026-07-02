@@ -9,20 +9,21 @@ const supabase = createClient(
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") return res.status(405).end();
 
-  const { user_id, role } = req.body ?? {};
+  const { user_id, role, first_name, last_name } = req.body ?? {};
   if (!user_id) return res.status(400).json({ error: "user_id requis" });
-  if (role !== "admin" && role !== "member") {
+  if (role !== undefined && role !== "admin" && role !== "member") {
     return res.status(400).json({ error: "role invalide" });
   }
+  if (!first_name || !last_name) return res.status(400).json({ error: "nom et prénom requis" });
 
   const { error } = await supabase
     .from("team_members")
-    .update({ role })
+    .update({ role, first_name, last_name })
     .eq("user_id", user_id);
 
   if (error) {
-    console.error("Update role error:", error);
-    return res.status(500).json({ error: "Échec de la mise à jour du rôle" });
+    console.error("Update member error:", error);
+    return res.status(500).json({ error: "Échec de la mise à jour du membre" });
   }
 
   return res.status(200).json({ ok: true });
