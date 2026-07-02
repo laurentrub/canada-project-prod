@@ -15,7 +15,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: "role invalide" });
   }
 
-  const { data, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(email);
+  const { data, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(email, {
+    redirectTo: "https://expatboost.com/admin-set-password",
+  });
 
   if (inviteError || !data?.user) {
     console.error("Invite error:", inviteError);
