@@ -2,7 +2,6 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
 import crypto from "node:crypto";
-import { requireAdmin } from "./lib/auth";
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL!,
@@ -14,11 +13,30 @@ function generatePassword() {
   return crypto.randomBytes(12).toString("base64url");
 }
 
+async function requireAdmin(req: VercelRequest): Promise<string | null> {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  if (!token) return null;
+
+  const { data: userData, error: userError } = await supabase.auth.getUser(token);
+  if (userError || !userData?.user) return null;
+
+  const { data: member, error: memberError } = await supabase
+    .from("team_members")
+    .select("role")
+    .eq("user_id", userData.user.id)
+    .single();
+
+  if (memberError || member?.role !== "admin") return null;
+
+  return userData.user.id;
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") return res.status(405).end();
 
-  const admin = await requireAdmin(req);
-  if (!admin) return res.status(403).json({ error: "Accès réservé aux administrateurs" });
+  const adminId = await requireAdmin(req);
+  if (!adminId) return res.status(403).json({ error: "Accès réservé aux administrateurs" });
 
   const { email, role, first_name, last_name } = req.body ?? {};
   if (!email) return res.status(400).json({ error: "email requis" });
