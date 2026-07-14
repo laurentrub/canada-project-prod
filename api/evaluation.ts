@@ -238,23 +238,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             <p style="margin:8px 0 4px;font-size:36px;font-weight:800;color:${resultColor}">${score}/100</p>
             <p style="margin:0;font-weight:600;color:${resultColor}">${resultText}</p>
           </div>
-          <div style="background:#f3f4f6;border-radius:8px;padding:16px;margin:24px 0">
-            <p style="margin:0 0 8px;font-weight:bold">Récapitulatif de votre profil</p>
-            <ul style="margin:0;padding-left:20px;color:#374151;line-height:1.8">
-              <li>Programme visé : <strong>${programLabel}</strong></li>
-              <li>Province souhaitée : <strong>${provinceLabel}</strong></li>
-              <li>Délai souhaité : <strong>${data.timeline || "Non précisé"}</strong></li>
-            </ul>
-          </div>
-          ${suggestions.length > 0 ? `
-          <div style="background:#fef3e2;border-radius:8px;padding:16px;margin:24px 0">
-            <p style="margin:0 0 8px;font-weight:bold">Pistes pour renforcer votre dossier</p>
-            <ul style="margin:0;padding-left:20px;color:#374151;line-height:1.8">
-              ${suggestions.map((s) => `<li>${s}</li>`).join("")}
-            </ul>
-          </div>
-          ` : ""}
-          <p>Ces pistes seront approfondies avec vous lors d'un entretien personnalisé. Pour aller plus loin, réservez votre consultation :</p>
+          <p>Un conseiller a identifié plusieurs pistes concrètes pour renforcer votre dossier. Réservez votre consultation personnalisée pour en discuter en détail :</p>
           <p style="margin:24px 0;text-align:center">
             <a href="${bookingUrl}" style="display:inline-block;background:#c0392b;color:#fff;text-decoration:none;padding:14px 28px;border-radius:999px;font-weight:600">
               Réserver ma consultation
