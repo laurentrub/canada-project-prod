@@ -31,7 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const adminId = await requireAdmin(req);
   if (!adminId) return res.status(403).json({ error: "Accès réservé aux administrateurs" });
 
-  const { network, phone, recipient, amount, currency, instructions } = req.body ?? {};
+  const { network, phone, recipient, amount, currency, instructions, xof_rate } = req.body ?? {};
   if (!network || !phone) return res.status(400).json({ error: "réseau et numéro requis" });
 
   const { error } = await supabase
@@ -43,6 +43,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       amount,
       currency,
       instructions,
+      xof_rate,
       updated_at: new Date().toISOString(),
     })
     .eq("id", 1);

@@ -43,7 +43,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const dateFormatted = formatDate(consultation.date);
-  const amount = `${settings.amount} ${settings.currency}`;
+  const xofAmount = settings.currency === "CAD" && settings.xof_rate
+    ? Math.round(settings.amount * settings.xof_rate).toLocaleString("fr-FR")
+    : null;
+  const amount = `${settings.amount} ${settings.currency}${xofAmount ? ` (≈ ${xofAmount} F CFA)` : ""}`;
 
   const instructionsHtml = settings.instructions
     ? `<p style="margin:12px 0 0">${settings.instructions.replace(/\n/g, "<br/>")}</p>`

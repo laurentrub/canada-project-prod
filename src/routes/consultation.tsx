@@ -60,6 +60,14 @@ function Consultation() {
   const [confirmed, setConfirmed] = useState(false);
   const [bookingError, setBookingError] = useState("");
   const [booking, setBooking] = useState(false);
+  const [payment, setPayment] = useState<{ amount: number; currency: string; xof_rate: number } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/payment-preview")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => setPayment(data))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!evaluation) return;
@@ -127,7 +135,19 @@ function Consultation() {
             <Detail icon={<Clock className="h-4 w-4" />} label="Durée" value="60 minutes" />
             <Detail icon={<User className="h-4 w-4" />} label="Host" value="Expat Boost — IMMIGRATION" />
             <Detail icon={<Video className="h-4 w-4" />} label="Lieu" value="Lien de connexion fourni à la confirmation" />
-            <Detail icon={<CreditCard className="h-4 w-4" />} label="Paiement" value="150 $ CAD" />
+            <Detail
+              icon={<CreditCard className="h-4 w-4" />}
+              label="Paiement"
+              value={
+                payment
+                  ? `${payment.amount} $ ${payment.currency}${
+                      payment.currency === "CAD" && payment.xof_rate
+                        ? ` (≈ ${Math.round(payment.amount * payment.xof_rate).toLocaleString("fr-FR")} F CFA)`
+                        : ""
+                    }`
+                  : "150 $ CAD"
+              }
+            />
           </ul>
         </div>
 
@@ -241,7 +261,7 @@ function Consultation() {
                 disabled={booking}
                 className="w-full rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-elegant)] transition-transform hover:scale-[1.01] disabled:opacity-50"
               >
-                {booking ? "Envoi…" : "Confirmer le rendez-vous — 150 $"}
+                {booking ? "Envoi…" : `Confirmer le rendez-vous — ${payment ? payment.amount : 150} $`}
               </button>
               <p className="text-xs text-muted-foreground text-center">
                 Le paiement sera traité après confirmation par email.

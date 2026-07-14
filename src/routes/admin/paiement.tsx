@@ -11,7 +11,12 @@ type PaymentSettings = {
   amount: number;
   currency: string;
   instructions: string;
+  xof_rate: number;
 };
+
+function formatXof(amount: number, rate: number) {
+  return Math.round(amount * rate).toLocaleString("fr-FR");
+}
 
 export const Route = createFileRoute("/admin/paiement")({
   component: AdminPaiement,
@@ -25,6 +30,7 @@ function AdminPaiement() {
     amount: 150,
     currency: "CAD",
     instructions: "",
+    xof_rate: 460,
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -45,6 +51,7 @@ function AdminPaiement() {
             amount: data.amount ?? 150,
             currency: data.currency ?? "CAD",
             instructions: data.instructions ?? "",
+            xof_rate: data.xof_rate ?? 460,
           });
         }
         setLoading(false);
@@ -149,6 +156,26 @@ function AdminPaiement() {
           </div>
         </div>
 
+        {/* Taux de conversion XOF */}
+        {form.currency === "CAD" && (
+          <div>
+            <label className="block text-sm font-medium mb-1.5">
+              Taux de conversion 1 CAD → XOF (F CFA)
+            </label>
+            <input
+              type="number"
+              min={0}
+              step={0.01}
+              value={form.xof_rate}
+              onChange={(e) => setForm({ ...form, xof_rate: parseFloat(e.target.value) || 0 })}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+            />
+            <p className="mt-1 text-xs text-muted-foreground">
+              Affiché en équivalent F CFA aux clients, en complément du montant en CAD. À mettre à jour selon le taux du marché.
+            </p>
+          </div>
+        )}
+
         {/* Instructions */}
         <div>
           <label className="block text-sm font-medium mb-1.5">
@@ -192,7 +219,13 @@ function AdminPaiement() {
             <p><span className="text-muted-foreground w-24 inline-block">Réseau</span> {form.network}</p>
             <p><span className="text-muted-foreground w-24 inline-block">Numéro</span> <strong>{form.phone}</strong></p>
             {form.recipient && <p><span className="text-muted-foreground w-24 inline-block">Destinataire</span> {form.recipient}</p>}
-            <p><span className="text-muted-foreground w-24 inline-block">Montant</span> <strong className="text-primary">{form.amount} {form.currency}</strong></p>
+            <p>
+              <span className="text-muted-foreground w-24 inline-block">Montant</span>{" "}
+              <strong className="text-primary">{form.amount} {form.currency}</strong>
+              {form.currency === "CAD" && (
+                <span className="text-muted-foreground"> (≈ {formatXof(form.amount, form.xof_rate)} F CFA)</span>
+              )}
+            </p>
           </div>
           {form.instructions && (
             <p className="mt-3 text-sm text-muted-foreground whitespace-pre-line">{form.instructions}</p>
