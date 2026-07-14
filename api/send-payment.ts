@@ -60,11 +60,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#111">
         <h1 style="font-size:22px;font-weight:bold">Informations de paiement</h1>
         <p>Bonjour ${consultation.full_name},</p>
-        <p>Voici les coordonnées pour régler votre consultation du <strong>${dateFormatted} à ${consultation.slot} EST</strong>.</p>
+        <p>Pour vous éviter les délais et frais d'un virement international vers le Canada, le règlement de votre consultation du <strong>${dateFormatted} à ${consultation.slot} EST</strong> se fait localement, auprès de notre partenaire <strong>${settings.recipient}</strong>, qui transmet ensuite le paiement à Expat Boost.</p>
 
         <div style="background:#f3f4f6;border-radius:8px;padding:20px;margin:24px 0">
-          <p style="margin:0 0 12px;font-weight:bold;font-size:15px">Paiement par ${settings.network}</p>
+          <p style="margin:0 0 12px;font-weight:bold;font-size:15px">Paiement via notre partenaire local — ${settings.network}</p>
           <table style="border-collapse:collapse;width:100%">
+            <tr>
+              <td style="padding:6px 10px 6px 0;color:#6b7280;white-space:nowrap">Partenaire</td>
+              <td style="padding:6px 0;font-weight:600">${settings.recipient}</td>
+            </tr>
             <tr>
               <td style="padding:6px 10px 6px 0;color:#6b7280;white-space:nowrap">Réseau</td>
               <td style="padding:6px 0;font-weight:600">${settings.network}</td>
@@ -72,10 +76,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             <tr>
               <td style="padding:6px 10px 6px 0;color:#6b7280;white-space:nowrap">Numéro</td>
               <td style="padding:6px 0;font-weight:600;font-size:18px;letter-spacing:0.05em">${settings.phone}</td>
-            </tr>
-            <tr>
-              <td style="padding:6px 10px 6px 0;color:#6b7280;white-space:nowrap">Destinataire</td>
-              <td style="padding:6px 0;font-weight:600">${settings.recipient}</td>
             </tr>
             <tr>
               <td style="padding:6px 10px 6px 0;color:#6b7280;white-space:nowrap">Montant</td>

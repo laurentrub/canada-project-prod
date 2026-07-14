@@ -85,7 +85,8 @@ function AdminPaiement() {
       <div className="mb-6">
         <h1 className="font-display text-2xl font-bold">Paramètres de paiement</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Ces informations sont envoyées aux clients par email depuis la page Consultations.
+          Coordonnées du partenaire local Mobile Money, envoyées aux clients par email depuis la page Consultations
+          pour éviter les frais et délais d'un virement international.
         </p>
       </div>
 
@@ -115,16 +116,19 @@ function AdminPaiement() {
           />
         </div>
 
-        {/* Destinataire */}
+        {/* Partenaire local */}
         <div>
-          <label className="block text-sm font-medium mb-1.5">Nom du destinataire</label>
+          <label className="block text-sm font-medium mb-1.5">Nom du partenaire local</label>
           <input
             type="text"
             value={form.recipient}
             onChange={(e) => setForm({ ...form, recipient: e.target.value })}
-            placeholder="ex: Expat Boost SARL"
+            placeholder="ex: Nom de l'agence partenaire au Togo"
             className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
           />
+          <p className="mt-1 text-xs text-muted-foreground">
+            Le candidat paie localement auprès de ce partenaire, qui reverse ensuite à Expat Boost — évite les frais et délais d'un virement international.
+          </p>
         </div>
 
         {/* Montant + Devise */}
@@ -215,11 +219,11 @@ function AdminPaiement() {
       {form.network && form.phone && (
         <div className="rounded-xl border border-border bg-secondary/40 p-5">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Aperçu de l'email client</p>
-          <p className="text-sm font-semibold mb-2">Paiement par {form.network}</p>
+          <p className="text-sm font-semibold mb-2">Paiement via notre partenaire local — {form.network}</p>
           <div className="space-y-1 text-sm">
+            {form.recipient && <p><span className="text-muted-foreground w-24 inline-block">Partenaire</span> {form.recipient}</p>}
             <p><span className="text-muted-foreground w-24 inline-block">Réseau</span> {form.network}</p>
             <p><span className="text-muted-foreground w-24 inline-block">Numéro</span> <strong>{form.phone}</strong></p>
-            {form.recipient && <p><span className="text-muted-foreground w-24 inline-block">Destinataire</span> {form.recipient}</p>}
             <p>
               <span className="text-muted-foreground w-24 inline-block">Montant</span>{" "}
               <strong className="text-primary">{form.amount} {form.currency}</strong>

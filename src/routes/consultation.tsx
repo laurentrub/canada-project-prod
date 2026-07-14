@@ -149,6 +149,9 @@ function Consultation() {
               }
             />
           </ul>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Le règlement se fait localement auprès de notre partenaire Mobile Money, sans virement international : les coordonnées vous seront envoyées par email après votre réservation.
+          </p>
         </div>
 
         <div className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
