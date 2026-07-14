@@ -149,7 +149,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const programLabel = data.program || "Non précisé";
   const provinceLabel = data.province || "Non précisé";
   const { label: resultText, color: resultColor } = resultLabel(score);
-  const bookingUrl = `https://expatboost.com/reserver?evaluation=${inserted.id}`;
+  const bookingUrl = `https://expatboost.com/consultation?evaluation=${inserted.id}`;
 
   const { data: admins } = await supabase
     .from("team_members")
