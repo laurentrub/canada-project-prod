@@ -1,9 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, useSearch } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Clock, User, Video, CreditCard, CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/consultation")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    evaluation: typeof search.evaluation === "string" ? search.evaluation : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Prendre rendez-vous — Expat Boost" },
@@ -23,16 +26,63 @@ export const Route = createFileRoute("/consultation")({
   component: Consultation,
 });
 
-const SLOTS = ["09:00", "10:30", "13:00", "14:30", "16:00"];
+const ALL_SLOTS = ["09:00", "10:30", "13:00", "14:30", "16:00"];
+
+function localTimeLabel(date: Date, slot: string, timezone: string) {
+  const [h, m] = slot.split(":").map(Number);
+  const utcGuess = new Date(`${date.toISOString().slice(0, 10)}T${slot}:00-05:00`);
+  try {
+    return new Intl.DateTimeFormat("fr-CA", {
+      timeZone: timezone,
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(utcGuess);
+  } catch {
+    return `${h}:${String(m).padStart(2, "0")}`;
+  }
+}
 
 function Consultation() {
+  const { evaluation } = useSearch({ from: "/consultation" });
+  const timezone = useMemo(() => {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch {
+      return "America/Toronto";
+    }
+  }, []);
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [slot, setSlot] = useState<string | null>(null);
+  const [availableSlots, setAvailableSlots] = useState<string[]>(ALL_SLOTS);
+  const [loadingSlots, setLoadingSlots] = useState(false);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const [bookingError, setBookingError] = useState("");
   const [booking, setBooking] = useState(false);
+
+  useEffect(() => {
+    if (!evaluation) return;
+    fetch(`/api/evaluation-summary?id=${evaluation}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.first_name) setName(`${data.first_name} ${data.last_name ?? ""}`.trim());
+        if (data?.email) setEmail(data.email);
+      })
+      .catch(() => {});
+  }, [evaluation]);
+
+  useEffect(() => {
+    if (!date) return;
+    setSlot(null);
+    setLoadingSlots(true);
+    const iso = date.toISOString().slice(0, 10);
+    fetch(`/api/available-slots?date=${iso}`)
+      .then((r) => (r.ok ? r.json() : { slots: ALL_SLOTS }))
+      .then((data) => setAvailableSlots(data.slots ?? []))
+      .catch(() => setAvailableSlots(ALL_SLOTS))
+      .finally(() => setLoadingSlots(false));
+  }, [date]);
 
   if (confirmed && date && slot) {
     return (
@@ -43,7 +93,10 @@ function Consultation() {
           Un email de confirmation et le lien de visioconférence ont été envoyés à <strong>{email}</strong>.
         </p>
         <p className="mt-2 text-muted-foreground">
-          {date.toLocaleDateString("fr-CA", { weekday: "long", day: "numeric", month: "long", year: "numeric" })} à {slot} (EST)
+          {date.toLocaleDateString("fr-CA", { weekday: "long", day: "numeric", month: "long", year: "numeric" })} à {slot} (heure de l'Est, Canada)
+        </p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Soit {localTimeLabel(date, slot, timezone)} dans votre fuseau horaire ({timezone})
         </p>
       </section>
     );
@@ -96,9 +149,17 @@ function Consultation() {
 
           {date && (
             <div className="mt-6">
-              <h4 className="text-sm font-semibold">Créneaux disponibles (EST)</h4>
-              <div className="mt-3 grid grid-cols-3 gap-2">
-                {SLOTS.map((s) => (
+              <h4 className="text-sm font-semibold">Créneaux disponibles</h4>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Affichés dans votre fuseau horaire ({timezone}) — heure du Canada entre parenthèses
+              </p>
+              {loadingSlots ? (
+                <p className="mt-3 text-sm text-muted-foreground">Chargement des créneaux…</p>
+              ) : availableSlots.length === 0 ? (
+                <p className="mt-3 text-sm text-muted-foreground">Aucun créneau disponible ce jour-là. Choisissez une autre date.</p>
+              ) : (
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                {availableSlots.map((s) => (
                   <button
                     key={s}
                     type="button"
@@ -109,10 +170,12 @@ function Consultation() {
                         : "border-border bg-background hover:border-primary/60"
                     }`}
                   >
-                    {s}
+                    {date ? localTimeLabel(date, s, timezone) : s}
+                    <span className="block text-xs opacity-70">({s} EST)</span>
                   </button>
                 ))}
               </div>
+              )}
             </div>
           )}
 
@@ -122,17 +185,27 @@ function Consultation() {
                 e.preventDefault();
                 setBookingError("");
                 setBooking(true);
+                const iso = date.toISOString().slice(0, 10);
                 const res = await fetch("/api/consultation", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
-                    date: date.toISOString().slice(0, 10),
+                    date: iso,
                     slot,
                     full_name: name,
                     email,
+                    evaluation_id: evaluation || null,
+                    timezone,
                   }),
                 });
-                if (!res.ok) {
+                if (res.status === 409) {
+                  setBookingError("Ce créneau vient d'être réservé par quelqu'un d'autre. Veuillez en choisir un autre.");
+                  setSlot(null);
+                  fetch(`/api/available-slots?date=${iso}`)
+                    .then((r) => (r.ok ? r.json() : { slots: ALL_SLOTS }))
+                    .then((data) => setAvailableSlots(data.slots ?? []))
+                    .catch(() => {});
+                } else if (!res.ok) {
                   setBookingError("Une erreur est survenue. Veuillez réessayer.");
                 } else {
                   setConfirmed(true);

@@ -50,6 +50,7 @@ type Evaluation = {
   notes: string;
   consent: boolean;
   status: string;
+  score: number | null;
 };
 
 export const Route = createFileRoute("/admin/evaluations")({
@@ -58,17 +59,24 @@ export const Route = createFileRoute("/admin/evaluations")({
 
 const STATUS_LABELS: Record<string, string> = {
   new: "Nouveau",
-  in_progress: "En cours",
-  done: "Traité",
-  rejected: "Rejeté",
+  contacted: "Contacté",
+  converted: "Converti",
+  lost: "Perdu",
 };
 
 const STATUS_COLORS: Record<string, string> = {
   new: "bg-blue-100 text-blue-700",
-  in_progress: "bg-yellow-100 text-yellow-700",
-  done: "bg-green-100 text-green-700",
-  rejected: "bg-red-100 text-red-700",
+  contacted: "bg-yellow-100 text-yellow-700",
+  converted: "bg-green-100 text-green-700",
+  lost: "bg-red-100 text-red-700",
 };
+
+function scoreColor(score: number | null) {
+  if (score === null) return "text-muted-foreground";
+  if (score >= 70) return "text-green-700";
+  if (score >= 45) return "text-yellow-700";
+  return "text-red-700";
+}
 
 function Field({ label, value }: { label: string; value?: string | boolean | null }) {
   if (!value && value !== false) return null;
@@ -125,6 +133,9 @@ function AdminEvaluations() {
                   <p className="text-xs text-muted-foreground">{r.email} · {new Date(r.created_at).toLocaleDateString("fr-CA")} · {r.nationality}</p>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
+                  {r.score !== null && (
+                    <span className={`text-sm font-bold ${scoreColor(r.score)}`}>{r.score}/100</span>
+                  )}
                   <select
                     value={r.status}
                     onClick={(e) => e.stopPropagation()}
