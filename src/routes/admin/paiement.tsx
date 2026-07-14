@@ -81,7 +81,7 @@ function AdminPaiement() {
   }
 
   return (
-    <div className="p-6 md:p-8 max-w-xl">
+    <div className="p-6 md:p-8 max-w-4xl">
       <div className="mb-6">
         <h1 className="font-display text-2xl font-bold">Paramètres de paiement</h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -89,6 +89,7 @@ function AdminPaiement() {
         </p>
       </div>
 
+      <div className="grid gap-6 md:grid-cols-2 md:items-start">
       <div className="space-y-5 rounded-xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
         {/* Réseau */}
         <div>
@@ -212,7 +213,7 @@ function AdminPaiement() {
 
       {/* Aperçu */}
       {form.network && form.phone && (
-        <div className="mt-6 rounded-xl border border-border bg-secondary/40 p-5">
+        <div className="rounded-xl border border-border bg-secondary/40 p-5">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Aperçu de l'email client</p>
           <p className="text-sm font-semibold mb-2">Paiement par {form.network}</p>
           <div className="space-y-1 text-sm">
@@ -232,6 +233,7 @@ function AdminPaiement() {
           )}
         </div>
       )}
+      </div>
     </div>
   );
 }
