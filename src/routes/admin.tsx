@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, Link, useNavigate, useLocation } from "@tansta
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
-import { LayoutDashboard, ClipboardList, CalendarCheck, Users, LogOut, Wallet } from "lucide-react";
+import { LayoutDashboard, ClipboardList, CalendarCheck, Users, LogOut, Wallet, UserCircle } from "lucide-react";
 import { useCurrentRole } from "@/hooks/use-current-role";
 
 export const Route = createFileRoute("/admin")({
@@ -15,6 +15,7 @@ const nav = [
   { to: "/admin/consultations", label: "Consultations", icon: CalendarCheck, adminOnly: false },
   { to: "/admin/equipe", label: "Équipe", icon: Users, adminOnly: true },
   { to: "/admin/paiement", label: "Paiement", icon: Wallet, adminOnly: true },
+  { to: "/admin/profil", label: "Mon profil", icon: UserCircle, adminOnly: false },
 ];
 
 const adminOnlyPaths = nav.filter((n) => n.adminOnly).map((n) => n.to);

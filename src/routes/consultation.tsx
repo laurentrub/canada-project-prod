@@ -63,7 +63,7 @@ function Consultation() {
   const [payment, setPayment] = useState<{ amount: number; currency: string; xof_rate: number } | null>(null);
 
   useEffect(() => {
-    fetch("/api/payment-preview")
+    fetch("/api/public-preview")
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => setPayment(data))
       .catch(() => {});
@@ -71,7 +71,7 @@ function Consultation() {
 
   useEffect(() => {
     if (!evaluation) return;
-    fetch(`/api/evaluation-summary?id=${evaluation}`)
+    fetch(`/api/public-preview?evaluation=${evaluation}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (data?.first_name) setName(`${data.first_name} ${data.last_name ?? ""}`.trim());

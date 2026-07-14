@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
@@ -89,6 +89,13 @@ function AdminLogin() {
             >
               {loading ? "Connexion…" : "Se connecter"}
             </button>
+
+            <Link
+              to="/mot-de-passe-oublie"
+              className="block text-center text-sm text-muted-foreground hover:text-foreground"
+            >
+              Mot de passe oublié ?
+            </Link>
           </div>
         </form>
       </div>

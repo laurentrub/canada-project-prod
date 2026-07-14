@@ -9,7 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ReinitialiserMotDePasseRouteImport } from './routes/reinitialiser-mot-de-passe'
 import { Route as ProgrammesRouteImport } from './routes/programmes'
+import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as EvaluationRouteImport } from './routes/evaluation'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -21,15 +23,26 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AProposRouteImport } from './routes/a-propos'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminProfilRouteImport } from './routes/admin/profil'
 import { Route as AdminPaiementRouteImport } from './routes/admin/paiement'
 import { Route as AdminEvaluationsRouteImport } from './routes/admin/evaluations'
 import { Route as AdminEquipeRouteImport } from './routes/admin/equipe'
 import { Route as AdminContactsRouteImport } from './routes/admin/contacts'
 import { Route as AdminConsultationsRouteImport } from './routes/admin/consultations'
 
+const ReinitialiserMotDePasseRoute = ReinitialiserMotDePasseRouteImport.update({
+  id: '/reinitialiser-mot-de-passe',
+  path: '/reinitialiser-mot-de-passe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProgrammesRoute = ProgrammesRouteImport.update({
   id: '/programmes',
   path: '/programmes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MotDePasseOublieRoute = MotDePasseOublieRouteImport.update({
+  id: '/mot-de-passe-oublie',
+  path: '/mot-de-passe-oublie',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MentionsLegalesRoute = MentionsLegalesRouteImport.update({
@@ -87,6 +100,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminProfilRoute = AdminProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPaiementRoute = AdminPaiementRouteImport.update({
   id: '/paiement',
   path: '/paiement',
@@ -124,12 +142,15 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/evaluation': typeof EvaluationRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/programmes': typeof ProgrammesRoute
+  '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/admin/consultations': typeof AdminConsultationsRoute
   '/admin/contacts': typeof AdminContactsRoute
   '/admin/equipe': typeof AdminEquipeRoute
   '/admin/evaluations': typeof AdminEvaluationsRoute
   '/admin/paiement': typeof AdminPaiementRoute
+  '/admin/profil': typeof AdminProfilRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -142,12 +163,15 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/evaluation': typeof EvaluationRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/programmes': typeof ProgrammesRoute
+  '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/admin/consultations': typeof AdminConsultationsRoute
   '/admin/contacts': typeof AdminContactsRoute
   '/admin/equipe': typeof AdminEquipeRoute
   '/admin/evaluations': typeof AdminEvaluationsRoute
   '/admin/paiement': typeof AdminPaiementRoute
+  '/admin/profil': typeof AdminProfilRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -162,12 +186,15 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/evaluation': typeof EvaluationRoute
   '/mentions-legales': typeof MentionsLegalesRoute
+  '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/programmes': typeof ProgrammesRoute
+  '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/admin/consultations': typeof AdminConsultationsRoute
   '/admin/contacts': typeof AdminContactsRoute
   '/admin/equipe': typeof AdminEquipeRoute
   '/admin/evaluations': typeof AdminEvaluationsRoute
   '/admin/paiement': typeof AdminPaiementRoute
+  '/admin/profil': typeof AdminProfilRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -183,12 +210,15 @@ export interface FileRouteTypes {
     | '/contact'
     | '/evaluation'
     | '/mentions-legales'
+    | '/mot-de-passe-oublie'
     | '/programmes'
+    | '/reinitialiser-mot-de-passe'
     | '/admin/consultations'
     | '/admin/contacts'
     | '/admin/equipe'
     | '/admin/evaluations'
     | '/admin/paiement'
+    | '/admin/profil'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -201,12 +231,15 @@ export interface FileRouteTypes {
     | '/contact'
     | '/evaluation'
     | '/mentions-legales'
+    | '/mot-de-passe-oublie'
     | '/programmes'
+    | '/reinitialiser-mot-de-passe'
     | '/admin/consultations'
     | '/admin/contacts'
     | '/admin/equipe'
     | '/admin/evaluations'
     | '/admin/paiement'
+    | '/admin/profil'
     | '/admin'
   id:
     | '__root__'
@@ -220,12 +253,15 @@ export interface FileRouteTypes {
     | '/contact'
     | '/evaluation'
     | '/mentions-legales'
+    | '/mot-de-passe-oublie'
     | '/programmes'
+    | '/reinitialiser-mot-de-passe'
     | '/admin/consultations'
     | '/admin/contacts'
     | '/admin/equipe'
     | '/admin/evaluations'
     | '/admin/paiement'
+    | '/admin/profil'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -240,16 +276,32 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   EvaluationRoute: typeof EvaluationRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
+  MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   ProgrammesRoute: typeof ProgrammesRoute
+  ReinitialiserMotDePasseRoute: typeof ReinitialiserMotDePasseRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reinitialiser-mot-de-passe': {
+      id: '/reinitialiser-mot-de-passe'
+      path: '/reinitialiser-mot-de-passe'
+      fullPath: '/reinitialiser-mot-de-passe'
+      preLoaderRoute: typeof ReinitialiserMotDePasseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/programmes': {
       id: '/programmes'
       path: '/programmes'
       fullPath: '/programmes'
       preLoaderRoute: typeof ProgrammesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mot-de-passe-oublie': {
+      id: '/mot-de-passe-oublie'
+      path: '/mot-de-passe-oublie'
+      fullPath: '/mot-de-passe-oublie'
+      preLoaderRoute: typeof MotDePasseOublieRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mentions-legales': {
@@ -329,6 +381,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/profil': {
+      id: '/admin/profil'
+      path: '/profil'
+      fullPath: '/admin/profil'
+      preLoaderRoute: typeof AdminProfilRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/paiement': {
       id: '/admin/paiement'
       path: '/paiement'
@@ -373,6 +432,7 @@ interface AdminRouteChildren {
   AdminEquipeRoute: typeof AdminEquipeRoute
   AdminEvaluationsRoute: typeof AdminEvaluationsRoute
   AdminPaiementRoute: typeof AdminPaiementRoute
+  AdminProfilRoute: typeof AdminProfilRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -382,6 +442,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminEquipeRoute: AdminEquipeRoute,
   AdminEvaluationsRoute: AdminEvaluationsRoute,
   AdminPaiementRoute: AdminPaiementRoute,
+  AdminProfilRoute: AdminProfilRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
@@ -398,7 +459,9 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   EvaluationRoute: EvaluationRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
+  MotDePasseOublieRoute: MotDePasseOublieRoute,
   ProgrammesRoute: ProgrammesRoute,
+  ReinitialiserMotDePasseRoute: ReinitialiserMotDePasseRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

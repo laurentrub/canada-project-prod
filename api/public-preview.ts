@@ -9,6 +9,22 @@ const supabase = createClient(
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET") return res.status(405).end();
 
+  const evaluationId = typeof req.query.evaluation === "string" ? req.query.evaluation : null;
+
+  if (evaluationId) {
+    const { data, error } = await supabase
+      .from("evaluations")
+      .select("first_name, last_name, email, score")
+      .eq("id", evaluationId)
+      .single();
+
+    if (error || !data) {
+      return res.status(404).json({ error: "Évaluation introuvable" });
+    }
+
+    return res.status(200).json(data);
+  }
+
   const { data, error } = await supabase
     .from("payment_settings")
     .select("amount, currency, xof_rate")
