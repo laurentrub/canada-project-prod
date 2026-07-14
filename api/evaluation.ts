@@ -29,25 +29,17 @@ function computeScore(data: Record<string, string>): number {
   };
   score += educationPoints[data.education] ?? 0;
 
-  // Français (max 15)
-  const frenchPoints: Record<string, number> = {
+  // Langues (français + anglais, max 15 chacun, planchers remontés pour ne pas
+  // pénaliser lourdement l'absence d'une langue officielle)
+  const languagePoints: Record<string, number> = {
     "Langue maternelle": 15,
     "Avancé (C1-C2)": 15,
-    "Intermédiaire (B1-B2)": 10,
-    "Débutant (A1-A2)": 4,
-    "Aucun": 0,
+    "Intermédiaire (B1-B2)": 12,
+    "Débutant (A1-A2)": 8,
+    "Aucun": 3,
   };
-  score += frenchPoints[data.frenchLevel] ?? 0;
-
-  // Anglais (max 15)
-  const englishPoints: Record<string, number> = {
-    "Langue maternelle": 15,
-    "Avancé (C1-C2)": 15,
-    "Intermédiaire (B1-B2)": 10,
-    "Débutant (A1-A2)": 4,
-    "Aucun": 0,
-  };
-  score += englishPoints[data.englishLevel] ?? 0;
+  score += languagePoints[data.frenchLevel] ?? 0;
+  score += languagePoints[data.englishLevel] ?? 0;
 
   // Expérience professionnelle (max 15)
   const experiencePoints: Record<string, number> = {
@@ -78,9 +70,46 @@ function computeScore(data: Record<string, string>): number {
 }
 
 function resultLabel(score: number): { label: string; color: string } {
-  if (score >= 70) return { label: "Profil très prometteur", color: "#15803d" };
-  if (score >= 45) return { label: "Profil prometteur avec des points à renforcer", color: "#b45309" };
-  return { label: "Profil nécessitant un accompagnement approfondi", color: "#b91c1c" };
+  if (score >= 70) return { label: "Profil solide, plusieurs voies possibles", color: "#15803d" };
+  if (score >= 45) return { label: "Profil intéressant, quelques points à renforcer", color: "#b45309" };
+  return { label: "Profil à consolider avant une demande", color: "#b91c1c" };
+}
+
+function buildSuggestions(data: Record<string, string>): string[] {
+  const suggestions: string[] = [];
+
+  const languagePoints: Record<string, number> = {
+    "Langue maternelle": 15,
+    "Avancé (C1-C2)": 15,
+    "Intermédiaire (B1-B2)": 10,
+    "Débutant (A1-A2)": 4,
+    "Aucun": 0,
+  };
+  const frenchScore = languagePoints[data.frenchLevel] ?? 0;
+  const englishScore = languagePoints[data.englishLevel] ?? 0;
+  if (frenchScore < 10 && englishScore < 10) {
+    suggestions.push("Passer un test de langue officiel (TEF/TCF ou IELTS/CELPIP) pour faire reconnaître votre niveau et ouvrir plus de programmes.");
+  } else if (Math.min(frenchScore, englishScore) < 10) {
+    suggestions.push("Renforcer votre seconde langue officielle (français ou anglais) : plusieurs programmes valorisent le bilinguisme.");
+  }
+
+  if (!data.ecaDone || data.ecaDone === "Non") {
+    suggestions.push("Faire évaluer votre diplôme (EDE/ECA) pour confirmer son équivalence canadienne.");
+  }
+
+  if (!data.jobOffer || data.jobOffer === "Non") {
+    suggestions.push("Explorer les offres d'emploi ou les programmes provinciaux qui ne nécessitent pas d'offre d'emploi préalable.");
+  }
+
+  if ((!data.canadaWork || data.canadaWork === "Non") && (!data.canadaStudy || data.canadaStudy === "Non")) {
+    suggestions.push("Envisager un permis d'études ou de travail temporaire : une première expérience au Canada renforce un dossier futur.");
+  }
+
+  if (!data.familyInCanada || data.familyInCanada === "Non") {
+    suggestions.push("Vérifier les programmes provinciaux de votre région cible : certains valorisent d'autres critères que les liens familiaux.");
+  }
+
+  return suggestions.slice(0, 3);
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -88,6 +117,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const data = req.body;
   const score = computeScore(data);
+  const suggestions = buildSuggestions(data);
 
   const { data: inserted, error: dbError } = await supabase
     .from("evaluations")
@@ -189,6 +219,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           <tr><td style="padding:6px;font-weight:bold">Offre d'emploi</td><td style="padding:6px">${data.jobOffer}</td></tr>
           <tr><td style="padding:6px;font-weight:bold">Notes</td><td style="padding:6px">${data.notes || "—"}</td></tr>
         </table>
+        ${suggestions.length > 0 ? `
+          <p style="margin-top:16px;font-weight:bold">Pistes suggérées pour l'entretien</p>
+          <ul>${suggestions.map((s) => `<li>${s}</li>`).join("")}</ul>
+        ` : ""}
       `,
     }),
     resend.emails.send({
@@ -212,7 +246,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               <li>Délai souhaité : <strong>${data.timeline || "Non précisé"}</strong></li>
             </ul>
           </div>
-          <p>Pour aller plus loin et obtenir une analyse détaillée avec un conseiller, réservez votre consultation personnalisée :</p>
+          ${suggestions.length > 0 ? `
+          <div style="background:#fef3e2;border-radius:8px;padding:16px;margin:24px 0">
+            <p style="margin:0 0 8px;font-weight:bold">Pistes pour renforcer votre dossier</p>
+            <ul style="margin:0;padding-left:20px;color:#374151;line-height:1.8">
+              ${suggestions.map((s) => `<li>${s}</li>`).join("")}
+            </ul>
+          </div>
+          ` : ""}
+          <p>Ces pistes seront approfondies avec vous lors d'un entretien personnalisé. Pour aller plus loin, réservez votre consultation :</p>
           <p style="margin:24px 0;text-align:center">
             <a href="${bookingUrl}" style="display:inline-block;background:#c0392b;color:#fff;text-decoration:none;padding:14px 28px;border-radius:999px;font-weight:600">
               Réserver ma consultation
