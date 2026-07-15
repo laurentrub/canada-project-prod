@@ -31,6 +31,32 @@ const STATUS_COLORS: Record<string, string> = {
   done: "bg-green-100 text-green-700",
 };
 
+function dateGroupLabel(iso: string) {
+  const date = new Date(iso);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+  const sameDay = (a: Date, b: Date) =>
+    a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  if (sameDay(date, today)) return "Aujourd'hui";
+  if (sameDay(date, yesterday)) return "Hier";
+  return date.toLocaleDateString("fr-CA", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+}
+
+function groupByDate<T extends { created_at: string }>(rows: T[]) {
+  const groups: { label: string; rows: T[] }[] = [];
+  for (const row of rows) {
+    const label = dateGroupLabel(row.created_at);
+    const last = groups[groups.length - 1];
+    if (last && last.label === label) {
+      last.rows.push(row);
+    } else {
+      groups.push({ label, rows: [row] });
+    }
+  }
+  return groups;
+}
+
 function AdminContacts() {
   const [rows, setRows] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,45 +90,52 @@ function AdminContacts() {
       ) : rows.length === 0 ? (
         <p className="text-sm text-muted-foreground">Aucun message pour le moment.</p>
       ) : (
-        <div className="space-y-3">
-          {rows.map((r) => (
-            <div key={r.id} className="rounded-xl border border-border bg-card shadow-[var(--shadow-card)]">
-              <button
-                onClick={() => setExpanded(expanded === r.id ? null : r.id)}
-                className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
-              >
-                <div className="flex items-center gap-4">
-                  <div>
-                    <p className="font-medium">{r.first_name} {r.last_name}</p>
-                    <p className="text-xs text-muted-foreground">{r.email} · {new Date(r.created_at).toLocaleDateString("fr-CA")}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <select
-                    value={r.status}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={(e) => updateStatus(r.id, e.target.value)}
-                    className={`rounded-full px-2 py-1 text-xs font-semibold border-0 cursor-pointer ${STATUS_COLORS[r.status]}`}
-                  >
-                    {Object.entries(STATUS_LABELS).map(([val, label]) => (
-                      <option key={val} value={val}>{label}</option>
-                    ))}
-                  </select>
-                  <span className="text-xs text-muted-foreground">{expanded === r.id ? "▲" : "▼"}</span>
-                </div>
-              </button>
+        <div className="space-y-6">
+          {groupByDate(rows).map((group) => (
+            <div key={group.label}>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{group.label}</p>
+              <div className="space-y-3">
+                {group.rows.map((r) => (
+                  <div key={r.id} className="rounded-xl border border-border bg-card shadow-[var(--shadow-card)]">
+                    <button
+                      onClick={() => setExpanded(expanded === r.id ? null : r.id)}
+                      className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div>
+                          <p className="font-medium">{r.first_name} {r.last_name}</p>
+                          <p className="text-xs text-muted-foreground">{r.email} · {new Date(r.created_at).toLocaleDateString("fr-CA")}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <select
+                          value={r.status}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(e) => updateStatus(r.id, e.target.value)}
+                          className={`rounded-full px-2 py-1 text-xs font-semibold border-0 cursor-pointer ${STATUS_COLORS[r.status]}`}
+                        >
+                          {Object.entries(STATUS_LABELS).map(([val, label]) => (
+                            <option key={val} value={val}>{label}</option>
+                          ))}
+                        </select>
+                        <span className="text-xs text-muted-foreground">{expanded === r.id ? "▲" : "▼"}</span>
+                      </div>
+                    </button>
 
-              {expanded === r.id && (
-                <div className="border-t border-border px-5 py-4 text-sm space-y-2 text-muted-foreground">
-                  <p><span className="font-medium text-foreground">Pays :</span> {r.country}</p>
-                  <p><span className="font-medium text-foreground">Nationalité :</span> {r.nationality}</p>
-                  <p><span className="font-medium text-foreground">Programme :</span> {r.program}</p>
-                  <p><span className="font-medium text-foreground">Message :</span> {r.message}</p>
-                  <a href={`mailto:${r.email}`} className="inline-block mt-2 rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground">
-                    Répondre par email
-                  </a>
-                </div>
-              )}
+                    {expanded === r.id && (
+                      <div className="border-t border-border px-5 py-4 text-sm space-y-2 text-muted-foreground">
+                        <p><span className="font-medium text-foreground">Pays :</span> {r.country}</p>
+                        <p><span className="font-medium text-foreground">Nationalité :</span> {r.nationality}</p>
+                        <p><span className="font-medium text-foreground">Programme :</span> {r.program}</p>
+                        <p><span className="font-medium text-foreground">Message :</span> {r.message}</p>
+                        <a href={`mailto:${r.email}`} className="inline-block mt-2 rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground">
+                          Répondre par email
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
         </div>

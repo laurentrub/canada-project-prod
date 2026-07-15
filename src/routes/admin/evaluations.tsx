@@ -71,6 +71,32 @@ const STATUS_COLORS: Record<string, string> = {
   lost: "bg-red-100 text-red-700",
 };
 
+function dateGroupLabel(iso: string) {
+  const date = new Date(iso);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+  const sameDay = (a: Date, b: Date) =>
+    a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  if (sameDay(date, today)) return "Aujourd'hui";
+  if (sameDay(date, yesterday)) return "Hier";
+  return date.toLocaleDateString("fr-CA", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+}
+
+function groupByDate<T extends { created_at: string }>(rows: T[]) {
+  const groups: { label: string; rows: T[] }[] = [];
+  for (const row of rows) {
+    const label = dateGroupLabel(row.created_at);
+    const last = groups[groups.length - 1];
+    if (last && last.label === label) {
+      last.rows.push(row);
+    } else {
+      groups.push({ label, rows: [row] });
+    }
+  }
+  return groups;
+}
+
 function scoreColor(score: number | null) {
   if (score === null) return "text-muted-foreground";
   if (score >= 70) return "text-green-700";
@@ -121,8 +147,12 @@ function AdminEvaluations() {
       ) : rows.length === 0 ? (
         <p className="text-sm text-muted-foreground">Aucune évaluation pour le moment.</p>
       ) : (
-        <div className="space-y-3">
-          {rows.map((r) => (
+        <div className="space-y-6">
+          {groupByDate(rows).map((group) => (
+          <div key={group.label}>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{group.label}</p>
+            <div className="space-y-3">
+              {group.rows.map((r) => (
             <div key={r.id} className="rounded-xl border border-border bg-card shadow-[var(--shadow-card)]">
               <button
                 onClick={() => setExpanded(expanded === r.id ? null : r.id)}
@@ -233,6 +263,9 @@ function AdminEvaluations() {
                 </div>
               )}
             </div>
+              ))}
+            </div>
+          </div>
           ))}
         </div>
       )}
